@@ -446,3 +446,228 @@ def TensorProtoEnd(builder):
 
 def End(builder):
     return TensorProtoEnd(builder)
+
+import onnx.StringStringEntryProto
+import onnx.TensorProto_.Segment
+try:
+    from typing import List, Optional
+except:
+    pass
+
+class TensorProtoT(object):
+
+    # TensorProtoT
+    def __init__(self):
+        self.dims = None  # type: List[int]
+        self.dataType = 0  # type: int
+        self.segment = None  # type: Optional[onnx.TensorProto_.Segment.SegmentT]
+        self.floatData = None  # type: List[float]
+        self.int32Data = None  # type: List[int]
+        self.stringData = None  # type: List[str]
+        self.int64Data = None  # type: List[int]
+        self.name = None  # type: str
+        self.docString = None  # type: str
+        self.rawData = None  # type: List[int]
+        self.externalData = None  # type: List[onnx.StringStringEntryProto.StringStringEntryProtoT]
+        self.dataLocation = 0  # type: int
+        self.doubleData = None  # type: List[float]
+        self.uint64Data = None  # type: List[int]
+
+    @classmethod
+    def InitFromBuf(cls, buf, pos):
+        tensorProto = TensorProto()
+        tensorProto.Init(buf, pos)
+        return cls.InitFromObj(tensorProto)
+
+    @classmethod
+    def InitFromPackedBuf(cls, buf, pos=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, pos)
+        return cls.InitFromBuf(buf, pos+n)
+
+    @classmethod
+    def InitFromObj(cls, tensorProto):
+        x = TensorProtoT()
+        x._UnPack(tensorProto)
+        return x
+
+    # TensorProtoT
+    def _UnPack(self, tensorProto):
+        if tensorProto is None:
+            return
+        if not tensorProto.DimsIsNone():
+            if np is None:
+                self.dims = []
+                for i in range(tensorProto.DimsLength()):
+                    self.dims.append(tensorProto.Dims(i))
+            else:
+                self.dims = tensorProto.DimsAsNumpy()
+        self.dataType = tensorProto.DataType()
+        if tensorProto.Segment() is not None:
+            self.segment = onnx.TensorProto_.Segment.SegmentT.InitFromObj(tensorProto.Segment())
+        if not tensorProto.FloatDataIsNone():
+            if np is None:
+                self.floatData = []
+                for i in range(tensorProto.FloatDataLength()):
+                    self.floatData.append(tensorProto.FloatData(i))
+            else:
+                self.floatData = tensorProto.FloatDataAsNumpy()
+        if not tensorProto.Int32DataIsNone():
+            if np is None:
+                self.int32Data = []
+                for i in range(tensorProto.Int32DataLength()):
+                    self.int32Data.append(tensorProto.Int32Data(i))
+            else:
+                self.int32Data = tensorProto.Int32DataAsNumpy()
+        if not tensorProto.StringDataIsNone():
+            self.stringData = []
+            for i in range(tensorProto.StringDataLength()):
+                self.stringData.append(tensorProto.StringData(i))
+        if not tensorProto.Int64DataIsNone():
+            if np is None:
+                self.int64Data = []
+                for i in range(tensorProto.Int64DataLength()):
+                    self.int64Data.append(tensorProto.Int64Data(i))
+            else:
+                self.int64Data = tensorProto.Int64DataAsNumpy()
+        self.name = tensorProto.Name()
+        self.docString = tensorProto.DocString()
+        if not tensorProto.RawDataIsNone():
+            if np is None:
+                self.rawData = []
+                for i in range(tensorProto.RawDataLength()):
+                    self.rawData.append(tensorProto.RawData(i))
+            else:
+                self.rawData = tensorProto.RawDataAsNumpy()
+        if not tensorProto.ExternalDataIsNone():
+            self.externalData = []
+            for i in range(tensorProto.ExternalDataLength()):
+                if tensorProto.ExternalData(i) is None:
+                    self.externalData.append(None)
+                else:
+                    stringStringEntryProto_ = onnx.StringStringEntryProto.StringStringEntryProtoT.InitFromObj(tensorProto.ExternalData(i))
+                    self.externalData.append(stringStringEntryProto_)
+        self.dataLocation = tensorProto.DataLocation()
+        if not tensorProto.DoubleDataIsNone():
+            if np is None:
+                self.doubleData = []
+                for i in range(tensorProto.DoubleDataLength()):
+                    self.doubleData.append(tensorProto.DoubleData(i))
+            else:
+                self.doubleData = tensorProto.DoubleDataAsNumpy()
+        if not tensorProto.Uint64DataIsNone():
+            if np is None:
+                self.uint64Data = []
+                for i in range(tensorProto.Uint64DataLength()):
+                    self.uint64Data.append(tensorProto.Uint64Data(i))
+            else:
+                self.uint64Data = tensorProto.Uint64DataAsNumpy()
+
+    # TensorProtoT
+    def Pack(self, builder):
+        if self.dims is not None:
+            if np is not None and type(self.dims) is np.ndarray:
+                dims = builder.CreateNumpyVector(self.dims)
+            else:
+                TensorProtoStartDimsVector(builder, len(self.dims))
+                for i in reversed(range(len(self.dims))):
+                    builder.PrependInt64(self.dims[i])
+                dims = builder.EndVector()
+        if self.segment is not None:
+            segment = self.segment.Pack(builder)
+        if self.floatData is not None:
+            if np is not None and type(self.floatData) is np.ndarray:
+                floatData = builder.CreateNumpyVector(self.floatData)
+            else:
+                TensorProtoStartFloatDataVector(builder, len(self.floatData))
+                for i in reversed(range(len(self.floatData))):
+                    builder.PrependFloat32(self.floatData[i])
+                floatData = builder.EndVector()
+        if self.int32Data is not None:
+            if np is not None and type(self.int32Data) is np.ndarray:
+                int32Data = builder.CreateNumpyVector(self.int32Data)
+            else:
+                TensorProtoStartInt32DataVector(builder, len(self.int32Data))
+                for i in reversed(range(len(self.int32Data))):
+                    builder.PrependInt32(self.int32Data[i])
+                int32Data = builder.EndVector()
+        if self.stringData is not None:
+            stringDatalist = []
+            for i in range(len(self.stringData)):
+                stringDatalist.append(builder.CreateString(self.stringData[i]))
+            TensorProtoStartStringDataVector(builder, len(self.stringData))
+            for i in reversed(range(len(self.stringData))):
+                builder.PrependUOffsetTRelative(stringDatalist[i])
+            stringData = builder.EndVector()
+        if self.int64Data is not None:
+            if np is not None and type(self.int64Data) is np.ndarray:
+                int64Data = builder.CreateNumpyVector(self.int64Data)
+            else:
+                TensorProtoStartInt64DataVector(builder, len(self.int64Data))
+                for i in reversed(range(len(self.int64Data))):
+                    builder.PrependInt64(self.int64Data[i])
+                int64Data = builder.EndVector()
+        if self.name is not None:
+            name = builder.CreateString(self.name)
+        if self.docString is not None:
+            docString = builder.CreateString(self.docString)
+        if self.rawData is not None:
+            if np is not None and type(self.rawData) is np.ndarray:
+                rawData = builder.CreateNumpyVector(self.rawData)
+            else:
+                TensorProtoStartRawDataVector(builder, len(self.rawData))
+                for i in reversed(range(len(self.rawData))):
+                    builder.PrependUint8(self.rawData[i])
+                rawData = builder.EndVector()
+        if self.externalData is not None:
+            externalDatalist = []
+            for i in range(len(self.externalData)):
+                externalDatalist.append(self.externalData[i].Pack(builder))
+            TensorProtoStartExternalDataVector(builder, len(self.externalData))
+            for i in reversed(range(len(self.externalData))):
+                builder.PrependUOffsetTRelative(externalDatalist[i])
+            externalData = builder.EndVector()
+        if self.doubleData is not None:
+            if np is not None and type(self.doubleData) is np.ndarray:
+                doubleData = builder.CreateNumpyVector(self.doubleData)
+            else:
+                TensorProtoStartDoubleDataVector(builder, len(self.doubleData))
+                for i in reversed(range(len(self.doubleData))):
+                    builder.PrependFloat64(self.doubleData[i])
+                doubleData = builder.EndVector()
+        if self.uint64Data is not None:
+            if np is not None and type(self.uint64Data) is np.ndarray:
+                uint64Data = builder.CreateNumpyVector(self.uint64Data)
+            else:
+                TensorProtoStartUint64DataVector(builder, len(self.uint64Data))
+                for i in reversed(range(len(self.uint64Data))):
+                    builder.PrependUint64(self.uint64Data[i])
+                uint64Data = builder.EndVector()
+        TensorProtoStart(builder)
+        if self.dims is not None:
+            TensorProtoAddDims(builder, dims)
+        TensorProtoAddDataType(builder, self.dataType)
+        if self.segment is not None:
+            TensorProtoAddSegment(builder, segment)
+        if self.floatData is not None:
+            TensorProtoAddFloatData(builder, floatData)
+        if self.int32Data is not None:
+            TensorProtoAddInt32Data(builder, int32Data)
+        if self.stringData is not None:
+            TensorProtoAddStringData(builder, stringData)
+        if self.int64Data is not None:
+            TensorProtoAddInt64Data(builder, int64Data)
+        if self.name is not None:
+            TensorProtoAddName(builder, name)
+        if self.docString is not None:
+            TensorProtoAddDocString(builder, docString)
+        if self.rawData is not None:
+            TensorProtoAddRawData(builder, rawData)
+        if self.externalData is not None:
+            TensorProtoAddExternalData(builder, externalData)
+        TensorProtoAddDataLocation(builder, self.dataLocation)
+        if self.doubleData is not None:
+            TensorProtoAddDoubleData(builder, doubleData)
+        if self.uint64Data is not None:
+            TensorProtoAddUint64Data(builder, uint64Data)
+        tensorProto = TensorProtoEnd(builder)
+        return tensorProto

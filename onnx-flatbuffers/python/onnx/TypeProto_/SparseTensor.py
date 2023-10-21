@@ -65,3 +65,52 @@ def SparseTensorEnd(builder):
 
 def End(builder):
     return SparseTensorEnd(builder)
+
+import onnx.TensorShapeProto
+try:
+    from typing import Optional
+except:
+    pass
+
+class SparseTensorT(object):
+
+    # SparseTensorT
+    def __init__(self):
+        self.elemType = 0  # type: int
+        self.shape = None  # type: Optional[onnx.TensorShapeProto.TensorShapeProtoT]
+
+    @classmethod
+    def InitFromBuf(cls, buf, pos):
+        sparseTensor = SparseTensor()
+        sparseTensor.Init(buf, pos)
+        return cls.InitFromObj(sparseTensor)
+
+    @classmethod
+    def InitFromPackedBuf(cls, buf, pos=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, pos)
+        return cls.InitFromBuf(buf, pos+n)
+
+    @classmethod
+    def InitFromObj(cls, sparseTensor):
+        x = SparseTensorT()
+        x._UnPack(sparseTensor)
+        return x
+
+    # SparseTensorT
+    def _UnPack(self, sparseTensor):
+        if sparseTensor is None:
+            return
+        self.elemType = sparseTensor.ElemType()
+        if sparseTensor.Shape() is not None:
+            self.shape = onnx.TensorShapeProto.TensorShapeProtoT.InitFromObj(sparseTensor.Shape())
+
+    # SparseTensorT
+    def Pack(self, builder):
+        if self.shape is not None:
+            shape = self.shape.Pack(builder)
+        SparseTensorStart(builder)
+        SparseTensorAddElemType(builder, self.elemType)
+        if self.shape is not None:
+            SparseTensorAddShape(builder, shape)
+        sparseTensor = SparseTensorEnd(builder)
+        return sparseTensor

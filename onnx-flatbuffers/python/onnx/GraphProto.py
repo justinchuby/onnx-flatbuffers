@@ -320,3 +320,191 @@ def GraphProtoEnd(builder):
 
 def End(builder):
     return GraphProtoEnd(builder)
+
+import onnx.NodeProto
+import onnx.SparseTensorProto
+import onnx.TensorAnnotation
+import onnx.TensorProto
+import onnx.ValueInfoProto
+try:
+    from typing import List
+except:
+    pass
+
+class GraphProtoT(object):
+
+    # GraphProtoT
+    def __init__(self):
+        self.node = None  # type: List[onnx.NodeProto.NodeProtoT]
+        self.name = None  # type: str
+        self.initializer = None  # type: List[onnx.TensorProto.TensorProtoT]
+        self.sparseInitializer = None  # type: List[onnx.SparseTensorProto.SparseTensorProtoT]
+        self.docString = None  # type: str
+        self.input = None  # type: List[onnx.ValueInfoProto.ValueInfoProtoT]
+        self.output = None  # type: List[onnx.ValueInfoProto.ValueInfoProtoT]
+        self.valueInfo = None  # type: List[onnx.ValueInfoProto.ValueInfoProtoT]
+        self.quantizationAnnotation = None  # type: List[onnx.TensorAnnotation.TensorAnnotationT]
+
+    @classmethod
+    def InitFromBuf(cls, buf, pos):
+        graphProto = GraphProto()
+        graphProto.Init(buf, pos)
+        return cls.InitFromObj(graphProto)
+
+    @classmethod
+    def InitFromPackedBuf(cls, buf, pos=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, pos)
+        return cls.InitFromBuf(buf, pos+n)
+
+    @classmethod
+    def InitFromObj(cls, graphProto):
+        x = GraphProtoT()
+        x._UnPack(graphProto)
+        return x
+
+    # GraphProtoT
+    def _UnPack(self, graphProto):
+        if graphProto is None:
+            return
+        if not graphProto.NodeIsNone():
+            self.node = []
+            for i in range(graphProto.NodeLength()):
+                if graphProto.Node(i) is None:
+                    self.node.append(None)
+                else:
+                    nodeProto_ = onnx.NodeProto.NodeProtoT.InitFromObj(graphProto.Node(i))
+                    self.node.append(nodeProto_)
+        self.name = graphProto.Name()
+        if not graphProto.InitializerIsNone():
+            self.initializer = []
+            for i in range(graphProto.InitializerLength()):
+                if graphProto.Initializer(i) is None:
+                    self.initializer.append(None)
+                else:
+                    tensorProto_ = onnx.TensorProto.TensorProtoT.InitFromObj(graphProto.Initializer(i))
+                    self.initializer.append(tensorProto_)
+        if not graphProto.SparseInitializerIsNone():
+            self.sparseInitializer = []
+            for i in range(graphProto.SparseInitializerLength()):
+                if graphProto.SparseInitializer(i) is None:
+                    self.sparseInitializer.append(None)
+                else:
+                    sparseTensorProto_ = onnx.SparseTensorProto.SparseTensorProtoT.InitFromObj(graphProto.SparseInitializer(i))
+                    self.sparseInitializer.append(sparseTensorProto_)
+        self.docString = graphProto.DocString()
+        if not graphProto.InputIsNone():
+            self.input = []
+            for i in range(graphProto.InputLength()):
+                if graphProto.Input(i) is None:
+                    self.input.append(None)
+                else:
+                    valueInfoProto_ = onnx.ValueInfoProto.ValueInfoProtoT.InitFromObj(graphProto.Input(i))
+                    self.input.append(valueInfoProto_)
+        if not graphProto.OutputIsNone():
+            self.output = []
+            for i in range(graphProto.OutputLength()):
+                if graphProto.Output(i) is None:
+                    self.output.append(None)
+                else:
+                    valueInfoProto_ = onnx.ValueInfoProto.ValueInfoProtoT.InitFromObj(graphProto.Output(i))
+                    self.output.append(valueInfoProto_)
+        if not graphProto.ValueInfoIsNone():
+            self.valueInfo = []
+            for i in range(graphProto.ValueInfoLength()):
+                if graphProto.ValueInfo(i) is None:
+                    self.valueInfo.append(None)
+                else:
+                    valueInfoProto_ = onnx.ValueInfoProto.ValueInfoProtoT.InitFromObj(graphProto.ValueInfo(i))
+                    self.valueInfo.append(valueInfoProto_)
+        if not graphProto.QuantizationAnnotationIsNone():
+            self.quantizationAnnotation = []
+            for i in range(graphProto.QuantizationAnnotationLength()):
+                if graphProto.QuantizationAnnotation(i) is None:
+                    self.quantizationAnnotation.append(None)
+                else:
+                    tensorAnnotation_ = onnx.TensorAnnotation.TensorAnnotationT.InitFromObj(graphProto.QuantizationAnnotation(i))
+                    self.quantizationAnnotation.append(tensorAnnotation_)
+
+    # GraphProtoT
+    def Pack(self, builder):
+        if self.node is not None:
+            nodelist = []
+            for i in range(len(self.node)):
+                nodelist.append(self.node[i].Pack(builder))
+            GraphProtoStartNodeVector(builder, len(self.node))
+            for i in reversed(range(len(self.node))):
+                builder.PrependUOffsetTRelative(nodelist[i])
+            node = builder.EndVector()
+        if self.name is not None:
+            name = builder.CreateString(self.name)
+        if self.initializer is not None:
+            initializerlist = []
+            for i in range(len(self.initializer)):
+                initializerlist.append(self.initializer[i].Pack(builder))
+            GraphProtoStartInitializerVector(builder, len(self.initializer))
+            for i in reversed(range(len(self.initializer))):
+                builder.PrependUOffsetTRelative(initializerlist[i])
+            initializer = builder.EndVector()
+        if self.sparseInitializer is not None:
+            sparseInitializerlist = []
+            for i in range(len(self.sparseInitializer)):
+                sparseInitializerlist.append(self.sparseInitializer[i].Pack(builder))
+            GraphProtoStartSparseInitializerVector(builder, len(self.sparseInitializer))
+            for i in reversed(range(len(self.sparseInitializer))):
+                builder.PrependUOffsetTRelative(sparseInitializerlist[i])
+            sparseInitializer = builder.EndVector()
+        if self.docString is not None:
+            docString = builder.CreateString(self.docString)
+        if self.input is not None:
+            inputlist = []
+            for i in range(len(self.input)):
+                inputlist.append(self.input[i].Pack(builder))
+            GraphProtoStartInputVector(builder, len(self.input))
+            for i in reversed(range(len(self.input))):
+                builder.PrependUOffsetTRelative(inputlist[i])
+            input = builder.EndVector()
+        if self.output is not None:
+            outputlist = []
+            for i in range(len(self.output)):
+                outputlist.append(self.output[i].Pack(builder))
+            GraphProtoStartOutputVector(builder, len(self.output))
+            for i in reversed(range(len(self.output))):
+                builder.PrependUOffsetTRelative(outputlist[i])
+            output = builder.EndVector()
+        if self.valueInfo is not None:
+            valueInfolist = []
+            for i in range(len(self.valueInfo)):
+                valueInfolist.append(self.valueInfo[i].Pack(builder))
+            GraphProtoStartValueInfoVector(builder, len(self.valueInfo))
+            for i in reversed(range(len(self.valueInfo))):
+                builder.PrependUOffsetTRelative(valueInfolist[i])
+            valueInfo = builder.EndVector()
+        if self.quantizationAnnotation is not None:
+            quantizationAnnotationlist = []
+            for i in range(len(self.quantizationAnnotation)):
+                quantizationAnnotationlist.append(self.quantizationAnnotation[i].Pack(builder))
+            GraphProtoStartQuantizationAnnotationVector(builder, len(self.quantizationAnnotation))
+            for i in reversed(range(len(self.quantizationAnnotation))):
+                builder.PrependUOffsetTRelative(quantizationAnnotationlist[i])
+            quantizationAnnotation = builder.EndVector()
+        GraphProtoStart(builder)
+        if self.node is not None:
+            GraphProtoAddNode(builder, node)
+        if self.name is not None:
+            GraphProtoAddName(builder, name)
+        if self.initializer is not None:
+            GraphProtoAddInitializer(builder, initializer)
+        if self.sparseInitializer is not None:
+            GraphProtoAddSparseInitializer(builder, sparseInitializer)
+        if self.docString is not None:
+            GraphProtoAddDocString(builder, docString)
+        if self.input is not None:
+            GraphProtoAddInput(builder, input)
+        if self.output is not None:
+            GraphProtoAddOutput(builder, output)
+        if self.valueInfo is not None:
+            GraphProtoAddValueInfo(builder, valueInfo)
+        if self.quantizationAnnotation is not None:
+            GraphProtoAddQuantizationAnnotation(builder, quantizationAnnotation)
+        graphProto = GraphProtoEnd(builder)
+        return graphProto

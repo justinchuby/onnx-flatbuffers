@@ -188,3 +188,115 @@ def NodeProtoEnd(builder):
 
 def End(builder):
     return NodeProtoEnd(builder)
+
+import onnx.AttributeProto
+try:
+    from typing import List
+except:
+    pass
+
+class NodeProtoT(object):
+
+    # NodeProtoT
+    def __init__(self):
+        self.input = None  # type: List[str]
+        self.output = None  # type: List[str]
+        self.name = None  # type: str
+        self.opType = None  # type: str
+        self.domain = None  # type: str
+        self.attribute = None  # type: List[onnx.AttributeProto.AttributeProtoT]
+        self.docString = None  # type: str
+
+    @classmethod
+    def InitFromBuf(cls, buf, pos):
+        nodeProto = NodeProto()
+        nodeProto.Init(buf, pos)
+        return cls.InitFromObj(nodeProto)
+
+    @classmethod
+    def InitFromPackedBuf(cls, buf, pos=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, pos)
+        return cls.InitFromBuf(buf, pos+n)
+
+    @classmethod
+    def InitFromObj(cls, nodeProto):
+        x = NodeProtoT()
+        x._UnPack(nodeProto)
+        return x
+
+    # NodeProtoT
+    def _UnPack(self, nodeProto):
+        if nodeProto is None:
+            return
+        if not nodeProto.InputIsNone():
+            self.input = []
+            for i in range(nodeProto.InputLength()):
+                self.input.append(nodeProto.Input(i))
+        if not nodeProto.OutputIsNone():
+            self.output = []
+            for i in range(nodeProto.OutputLength()):
+                self.output.append(nodeProto.Output(i))
+        self.name = nodeProto.Name()
+        self.opType = nodeProto.OpType()
+        self.domain = nodeProto.Domain()
+        if not nodeProto.AttributeIsNone():
+            self.attribute = []
+            for i in range(nodeProto.AttributeLength()):
+                if nodeProto.Attribute(i) is None:
+                    self.attribute.append(None)
+                else:
+                    attributeProto_ = onnx.AttributeProto.AttributeProtoT.InitFromObj(nodeProto.Attribute(i))
+                    self.attribute.append(attributeProto_)
+        self.docString = nodeProto.DocString()
+
+    # NodeProtoT
+    def Pack(self, builder):
+        if self.input is not None:
+            inputlist = []
+            for i in range(len(self.input)):
+                inputlist.append(builder.CreateString(self.input[i]))
+            NodeProtoStartInputVector(builder, len(self.input))
+            for i in reversed(range(len(self.input))):
+                builder.PrependUOffsetTRelative(inputlist[i])
+            input = builder.EndVector()
+        if self.output is not None:
+            outputlist = []
+            for i in range(len(self.output)):
+                outputlist.append(builder.CreateString(self.output[i]))
+            NodeProtoStartOutputVector(builder, len(self.output))
+            for i in reversed(range(len(self.output))):
+                builder.PrependUOffsetTRelative(outputlist[i])
+            output = builder.EndVector()
+        if self.name is not None:
+            name = builder.CreateString(self.name)
+        if self.opType is not None:
+            opType = builder.CreateString(self.opType)
+        if self.domain is not None:
+            domain = builder.CreateString(self.domain)
+        if self.attribute is not None:
+            attributelist = []
+            for i in range(len(self.attribute)):
+                attributelist.append(self.attribute[i].Pack(builder))
+            NodeProtoStartAttributeVector(builder, len(self.attribute))
+            for i in reversed(range(len(self.attribute))):
+                builder.PrependUOffsetTRelative(attributelist[i])
+            attribute = builder.EndVector()
+        if self.docString is not None:
+            docString = builder.CreateString(self.docString)
+        NodeProtoStart(builder)
+        if self.input is not None:
+            NodeProtoAddInput(builder, input)
+        if self.output is not None:
+            NodeProtoAddOutput(builder, output)
+        if self.name is not None:
+            NodeProtoAddName(builder, name)
+        if self.opType is not None:
+            NodeProtoAddOpType(builder, opType)
+        if self.domain is not None:
+            NodeProtoAddDomain(builder, domain)
+        if self.attribute is not None:
+            NodeProtoAddAttribute(builder, attribute)
+        if self.docString is not None:
+            NodeProtoAddDocString(builder, docString)
+        nodeProto = NodeProtoEnd(builder)
+        return nodeProto

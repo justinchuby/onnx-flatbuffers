@@ -120,3 +120,81 @@ def Anonymous1End(builder):
 
 def End(builder):
     return Anonymous1End(builder)
+
+import onnx.TypeProto_.Map
+import onnx.TypeProto_.Optional
+import onnx.TypeProto_.Sequence
+import onnx.TypeProto_.SparseTensor
+import onnx.TypeProto_.Tensor
+try:
+    from typing import Optional
+except:
+    pass
+
+class Anonymous1T(object):
+
+    # Anonymous1T
+    def __init__(self):
+        self.tensorType = None  # type: Optional[onnx.TypeProto_.Tensor.TensorT]
+        self.sequenceType = None  # type: Optional[onnx.TypeProto_.Sequence.SequenceT]
+        self.mapType = None  # type: Optional[onnx.TypeProto_.Map.MapT]
+        self.optionalType = None  # type: Optional[onnx.TypeProto_.Optional.OptionalT]
+        self.sparseTensorType = None  # type: Optional[onnx.TypeProto_.SparseTensor.SparseTensorT]
+
+    @classmethod
+    def InitFromBuf(cls, buf, pos):
+        anonymous1 = Anonymous1()
+        anonymous1.Init(buf, pos)
+        return cls.InitFromObj(anonymous1)
+
+    @classmethod
+    def InitFromPackedBuf(cls, buf, pos=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, pos)
+        return cls.InitFromBuf(buf, pos+n)
+
+    @classmethod
+    def InitFromObj(cls, anonymous1):
+        x = Anonymous1T()
+        x._UnPack(anonymous1)
+        return x
+
+    # Anonymous1T
+    def _UnPack(self, anonymous1):
+        if anonymous1 is None:
+            return
+        if anonymous1.TensorType() is not None:
+            self.tensorType = onnx.TypeProto_.Tensor.TensorT.InitFromObj(anonymous1.TensorType())
+        if anonymous1.SequenceType() is not None:
+            self.sequenceType = onnx.TypeProto_.Sequence.SequenceT.InitFromObj(anonymous1.SequenceType())
+        if anonymous1.MapType() is not None:
+            self.mapType = onnx.TypeProto_.Map.MapT.InitFromObj(anonymous1.MapType())
+        if anonymous1.OptionalType() is not None:
+            self.optionalType = onnx.TypeProto_.Optional.OptionalT.InitFromObj(anonymous1.OptionalType())
+        if anonymous1.SparseTensorType() is not None:
+            self.sparseTensorType = onnx.TypeProto_.SparseTensor.SparseTensorT.InitFromObj(anonymous1.SparseTensorType())
+
+    # Anonymous1T
+    def Pack(self, builder):
+        if self.tensorType is not None:
+            tensorType = self.tensorType.Pack(builder)
+        if self.sequenceType is not None:
+            sequenceType = self.sequenceType.Pack(builder)
+        if self.mapType is not None:
+            mapType = self.mapType.Pack(builder)
+        if self.optionalType is not None:
+            optionalType = self.optionalType.Pack(builder)
+        if self.sparseTensorType is not None:
+            sparseTensorType = self.sparseTensorType.Pack(builder)
+        Anonymous1Start(builder)
+        if self.tensorType is not None:
+            Anonymous1AddTensorType(builder, tensorType)
+        if self.sequenceType is not None:
+            Anonymous1AddSequenceType(builder, sequenceType)
+        if self.mapType is not None:
+            Anonymous1AddMapType(builder, mapType)
+        if self.optionalType is not None:
+            Anonymous1AddOptionalType(builder, optionalType)
+        if self.sparseTensorType is not None:
+            Anonymous1AddSparseTensorType(builder, sparseTensorType)
+        anonymous1 = Anonymous1End(builder)
+        return anonymous1

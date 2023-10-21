@@ -65,3 +65,52 @@ def TensorEnd(builder):
 
 def End(builder):
     return TensorEnd(builder)
+
+import onnx.TensorShapeProto
+try:
+    from typing import Optional
+except:
+    pass
+
+class TensorT(object):
+
+    # TensorT
+    def __init__(self):
+        self.elemType = 0  # type: int
+        self.shape = None  # type: Optional[onnx.TensorShapeProto.TensorShapeProtoT]
+
+    @classmethod
+    def InitFromBuf(cls, buf, pos):
+        tensor = Tensor()
+        tensor.Init(buf, pos)
+        return cls.InitFromObj(tensor)
+
+    @classmethod
+    def InitFromPackedBuf(cls, buf, pos=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, pos)
+        return cls.InitFromBuf(buf, pos+n)
+
+    @classmethod
+    def InitFromObj(cls, tensor):
+        x = TensorT()
+        x._UnPack(tensor)
+        return x
+
+    # TensorT
+    def _UnPack(self, tensor):
+        if tensor is None:
+            return
+        self.elemType = tensor.ElemType()
+        if tensor.Shape() is not None:
+            self.shape = onnx.TensorShapeProto.TensorShapeProtoT.InitFromObj(tensor.Shape())
+
+    # TensorT
+    def Pack(self, builder):
+        if self.shape is not None:
+            shape = self.shape.Pack(builder)
+        TensorStart(builder)
+        TensorAddElemType(builder, self.elemType)
+        if self.shape is not None:
+            TensorAddShape(builder, shape)
+        tensor = TensorEnd(builder)
+        return tensor

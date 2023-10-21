@@ -78,3 +78,61 @@ def ValueInfoProtoEnd(builder):
 
 def End(builder):
     return ValueInfoProtoEnd(builder)
+
+import onnx.TypeProto
+try:
+    from typing import Optional
+except:
+    pass
+
+class ValueInfoProtoT(object):
+
+    # ValueInfoProtoT
+    def __init__(self):
+        self.name = None  # type: str
+        self.type = None  # type: Optional[onnx.TypeProto.TypeProtoT]
+        self.docString = None  # type: str
+
+    @classmethod
+    def InitFromBuf(cls, buf, pos):
+        valueInfoProto = ValueInfoProto()
+        valueInfoProto.Init(buf, pos)
+        return cls.InitFromObj(valueInfoProto)
+
+    @classmethod
+    def InitFromPackedBuf(cls, buf, pos=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, pos)
+        return cls.InitFromBuf(buf, pos+n)
+
+    @classmethod
+    def InitFromObj(cls, valueInfoProto):
+        x = ValueInfoProtoT()
+        x._UnPack(valueInfoProto)
+        return x
+
+    # ValueInfoProtoT
+    def _UnPack(self, valueInfoProto):
+        if valueInfoProto is None:
+            return
+        self.name = valueInfoProto.Name()
+        if valueInfoProto.Type() is not None:
+            self.type = onnx.TypeProto.TypeProtoT.InitFromObj(valueInfoProto.Type())
+        self.docString = valueInfoProto.DocString()
+
+    # ValueInfoProtoT
+    def Pack(self, builder):
+        if self.name is not None:
+            name = builder.CreateString(self.name)
+        if self.type is not None:
+            type = self.type.Pack(builder)
+        if self.docString is not None:
+            docString = builder.CreateString(self.docString)
+        ValueInfoProtoStart(builder)
+        if self.name is not None:
+            ValueInfoProtoAddName(builder, name)
+        if self.type is not None:
+            ValueInfoProtoAddType(builder, type)
+        if self.docString is not None:
+            ValueInfoProtoAddDocString(builder, docString)
+        valueInfoProto = ValueInfoProtoEnd(builder)
+        return valueInfoProto

@@ -61,3 +61,49 @@ def StringStringEntryProtoEnd(builder):
 
 def End(builder):
     return StringStringEntryProtoEnd(builder)
+
+
+class StringStringEntryProtoT(object):
+
+    # StringStringEntryProtoT
+    def __init__(self):
+        self.key = None  # type: str
+        self.value = None  # type: str
+
+    @classmethod
+    def InitFromBuf(cls, buf, pos):
+        stringStringEntryProto = StringStringEntryProto()
+        stringStringEntryProto.Init(buf, pos)
+        return cls.InitFromObj(stringStringEntryProto)
+
+    @classmethod
+    def InitFromPackedBuf(cls, buf, pos=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, pos)
+        return cls.InitFromBuf(buf, pos+n)
+
+    @classmethod
+    def InitFromObj(cls, stringStringEntryProto):
+        x = StringStringEntryProtoT()
+        x._UnPack(stringStringEntryProto)
+        return x
+
+    # StringStringEntryProtoT
+    def _UnPack(self, stringStringEntryProto):
+        if stringStringEntryProto is None:
+            return
+        self.key = stringStringEntryProto.Key()
+        self.value = stringStringEntryProto.Value()
+
+    # StringStringEntryProtoT
+    def Pack(self, builder):
+        if self.key is not None:
+            key = builder.CreateString(self.key)
+        if self.value is not None:
+            value = builder.CreateString(self.value)
+        StringStringEntryProtoStart(builder)
+        if self.key is not None:
+            StringStringEntryProtoAddKey(builder, key)
+        if self.value is not None:
+            StringStringEntryProtoAddValue(builder, value)
+        stringStringEntryProto = StringStringEntryProtoEnd(builder)
+        return stringStringEntryProto

@@ -65,3 +65,55 @@ def TypeProtoEnd(builder):
 
 def End(builder):
     return TypeProtoEnd(builder)
+
+import onnx.TypeProto_.Anonymous1
+try:
+    from typing import Optional
+except:
+    pass
+
+class TypeProtoT(object):
+
+    # TypeProtoT
+    def __init__(self):
+        self.value = None  # type: Optional[onnx.TypeProto_.Anonymous1.Anonymous1T]
+        self.denotation = None  # type: str
+
+    @classmethod
+    def InitFromBuf(cls, buf, pos):
+        typeProto = TypeProto()
+        typeProto.Init(buf, pos)
+        return cls.InitFromObj(typeProto)
+
+    @classmethod
+    def InitFromPackedBuf(cls, buf, pos=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, pos)
+        return cls.InitFromBuf(buf, pos+n)
+
+    @classmethod
+    def InitFromObj(cls, typeProto):
+        x = TypeProtoT()
+        x._UnPack(typeProto)
+        return x
+
+    # TypeProtoT
+    def _UnPack(self, typeProto):
+        if typeProto is None:
+            return
+        if typeProto.Value() is not None:
+            self.value = onnx.TypeProto_.Anonymous1.Anonymous1T.InitFromObj(typeProto.Value())
+        self.denotation = typeProto.Denotation()
+
+    # TypeProtoT
+    def Pack(self, builder):
+        if self.value is not None:
+            value = self.value.Pack(builder)
+        if self.denotation is not None:
+            denotation = builder.CreateString(self.denotation)
+        TypeProtoStart(builder)
+        if self.value is not None:
+            TypeProtoAddValue(builder, value)
+        if self.denotation is not None:
+            TypeProtoAddDenotation(builder, denotation)
+        typeProto = TypeProtoEnd(builder)
+        return typeProto

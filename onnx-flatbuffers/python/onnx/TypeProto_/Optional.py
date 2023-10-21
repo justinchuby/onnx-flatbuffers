@@ -52,3 +52,49 @@ def OptionalEnd(builder):
 
 def End(builder):
     return OptionalEnd(builder)
+
+import onnx.TypeProto
+try:
+    from typing import Optional
+except:
+    pass
+
+class OptionalT(object):
+
+    # OptionalT
+    def __init__(self):
+        self.elemType = None  # type: Optional[onnx.TypeProto.TypeProtoT]
+
+    @classmethod
+    def InitFromBuf(cls, buf, pos):
+        optional = Optional()
+        optional.Init(buf, pos)
+        return cls.InitFromObj(optional)
+
+    @classmethod
+    def InitFromPackedBuf(cls, buf, pos=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, pos)
+        return cls.InitFromBuf(buf, pos+n)
+
+    @classmethod
+    def InitFromObj(cls, optional):
+        x = OptionalT()
+        x._UnPack(optional)
+        return x
+
+    # OptionalT
+    def _UnPack(self, optional):
+        if optional is None:
+            return
+        if optional.ElemType() is not None:
+            self.elemType = onnx.TypeProto.TypeProtoT.InitFromObj(optional.ElemType())
+
+    # OptionalT
+    def Pack(self, builder):
+        if self.elemType is not None:
+            elemType = self.elemType.Pack(builder)
+        OptionalStart(builder)
+        if self.elemType is not None:
+            OptionalAddElemType(builder, elemType)
+        optional = OptionalEnd(builder)
+        return optional

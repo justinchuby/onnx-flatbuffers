@@ -108,3 +108,74 @@ def SparseTensorProtoEnd(builder):
 
 def End(builder):
     return SparseTensorProtoEnd(builder)
+
+import onnx.TensorProto
+try:
+    from typing import List, Optional
+except:
+    pass
+
+class SparseTensorProtoT(object):
+
+    # SparseTensorProtoT
+    def __init__(self):
+        self.values = None  # type: Optional[onnx.TensorProto.TensorProtoT]
+        self.indices = None  # type: Optional[onnx.TensorProto.TensorProtoT]
+        self.dims = None  # type: List[int]
+
+    @classmethod
+    def InitFromBuf(cls, buf, pos):
+        sparseTensorProto = SparseTensorProto()
+        sparseTensorProto.Init(buf, pos)
+        return cls.InitFromObj(sparseTensorProto)
+
+    @classmethod
+    def InitFromPackedBuf(cls, buf, pos=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, pos)
+        return cls.InitFromBuf(buf, pos+n)
+
+    @classmethod
+    def InitFromObj(cls, sparseTensorProto):
+        x = SparseTensorProtoT()
+        x._UnPack(sparseTensorProto)
+        return x
+
+    # SparseTensorProtoT
+    def _UnPack(self, sparseTensorProto):
+        if sparseTensorProto is None:
+            return
+        if sparseTensorProto.Values() is not None:
+            self.values = onnx.TensorProto.TensorProtoT.InitFromObj(sparseTensorProto.Values())
+        if sparseTensorProto.Indices() is not None:
+            self.indices = onnx.TensorProto.TensorProtoT.InitFromObj(sparseTensorProto.Indices())
+        if not sparseTensorProto.DimsIsNone():
+            if np is None:
+                self.dims = []
+                for i in range(sparseTensorProto.DimsLength()):
+                    self.dims.append(sparseTensorProto.Dims(i))
+            else:
+                self.dims = sparseTensorProto.DimsAsNumpy()
+
+    # SparseTensorProtoT
+    def Pack(self, builder):
+        if self.values is not None:
+            values = self.values.Pack(builder)
+        if self.indices is not None:
+            indices = self.indices.Pack(builder)
+        if self.dims is not None:
+            if np is not None and type(self.dims) is np.ndarray:
+                dims = builder.CreateNumpyVector(self.dims)
+            else:
+                SparseTensorProtoStartDimsVector(builder, len(self.dims))
+                for i in reversed(range(len(self.dims))):
+                    builder.PrependInt64(self.dims[i])
+                dims = builder.EndVector()
+        SparseTensorProtoStart(builder)
+        if self.values is not None:
+            SparseTensorProtoAddValues(builder, values)
+        if self.indices is not None:
+            SparseTensorProtoAddIndices(builder, indices)
+        if self.dims is not None:
+            SparseTensorProtoAddDims(builder, dims)
+        sparseTensorProto = SparseTensorProtoEnd(builder)
+        return sparseTensorProto

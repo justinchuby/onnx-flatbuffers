@@ -478,3 +478,245 @@ def AttributeProtoEnd(builder):
 
 def End(builder):
     return AttributeProtoEnd(builder)
+
+import onnx.GraphProto
+import onnx.SparseTensorProto
+import onnx.TensorProto
+import onnx.TypeProto
+try:
+    from typing import List, Optional
+except:
+    pass
+
+class AttributeProtoT(object):
+
+    # AttributeProtoT
+    def __init__(self):
+        self.name = None  # type: str
+        self.refAttrName = None  # type: str
+        self.docString = None  # type: str
+        self.type = 0  # type: int
+        self.f = 0.0  # type: float
+        self.i = 0  # type: int
+        self.s = None  # type: List[int]
+        self.t = None  # type: Optional[onnx.TensorProto.TensorProtoT]
+        self.g = None  # type: Optional[onnx.GraphProto.GraphProtoT]
+        self.sparseTensor = None  # type: Optional[onnx.SparseTensorProto.SparseTensorProtoT]
+        self.tp = None  # type: Optional[onnx.TypeProto.TypeProtoT]
+        self.floats = None  # type: List[float]
+        self.ints = None  # type: List[int]
+        self.strings = None  # type: List[str]
+        self.tensors = None  # type: List[onnx.TensorProto.TensorProtoT]
+        self.graphs = None  # type: List[onnx.GraphProto.GraphProtoT]
+        self.sparseTensors = None  # type: List[onnx.SparseTensorProto.SparseTensorProtoT]
+        self.typeProtos = None  # type: List[onnx.TypeProto.TypeProtoT]
+
+    @classmethod
+    def InitFromBuf(cls, buf, pos):
+        attributeProto = AttributeProto()
+        attributeProto.Init(buf, pos)
+        return cls.InitFromObj(attributeProto)
+
+    @classmethod
+    def InitFromPackedBuf(cls, buf, pos=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, pos)
+        return cls.InitFromBuf(buf, pos+n)
+
+    @classmethod
+    def InitFromObj(cls, attributeProto):
+        x = AttributeProtoT()
+        x._UnPack(attributeProto)
+        return x
+
+    # AttributeProtoT
+    def _UnPack(self, attributeProto):
+        if attributeProto is None:
+            return
+        self.name = attributeProto.Name()
+        self.refAttrName = attributeProto.RefAttrName()
+        self.docString = attributeProto.DocString()
+        self.type = attributeProto.Type()
+        self.f = attributeProto.F()
+        self.i = attributeProto.I()
+        if not attributeProto.SIsNone():
+            if np is None:
+                self.s = []
+                for i in range(attributeProto.SLength()):
+                    self.s.append(attributeProto.S(i))
+            else:
+                self.s = attributeProto.SAsNumpy()
+        if attributeProto.T() is not None:
+            self.t = onnx.TensorProto.TensorProtoT.InitFromObj(attributeProto.T())
+        if attributeProto.G() is not None:
+            self.g = onnx.GraphProto.GraphProtoT.InitFromObj(attributeProto.G())
+        if attributeProto.SparseTensor() is not None:
+            self.sparseTensor = onnx.SparseTensorProto.SparseTensorProtoT.InitFromObj(attributeProto.SparseTensor())
+        if attributeProto.Tp() is not None:
+            self.tp = onnx.TypeProto.TypeProtoT.InitFromObj(attributeProto.Tp())
+        if not attributeProto.FloatsIsNone():
+            if np is None:
+                self.floats = []
+                for i in range(attributeProto.FloatsLength()):
+                    self.floats.append(attributeProto.Floats(i))
+            else:
+                self.floats = attributeProto.FloatsAsNumpy()
+        if not attributeProto.IntsIsNone():
+            if np is None:
+                self.ints = []
+                for i in range(attributeProto.IntsLength()):
+                    self.ints.append(attributeProto.Ints(i))
+            else:
+                self.ints = attributeProto.IntsAsNumpy()
+        if not attributeProto.StringsIsNone():
+            self.strings = []
+            for i in range(attributeProto.StringsLength()):
+                self.strings.append(attributeProto.Strings(i))
+        if not attributeProto.TensorsIsNone():
+            self.tensors = []
+            for i in range(attributeProto.TensorsLength()):
+                if attributeProto.Tensors(i) is None:
+                    self.tensors.append(None)
+                else:
+                    tensorProto_ = onnx.TensorProto.TensorProtoT.InitFromObj(attributeProto.Tensors(i))
+                    self.tensors.append(tensorProto_)
+        if not attributeProto.GraphsIsNone():
+            self.graphs = []
+            for i in range(attributeProto.GraphsLength()):
+                if attributeProto.Graphs(i) is None:
+                    self.graphs.append(None)
+                else:
+                    graphProto_ = onnx.GraphProto.GraphProtoT.InitFromObj(attributeProto.Graphs(i))
+                    self.graphs.append(graphProto_)
+        if not attributeProto.SparseTensorsIsNone():
+            self.sparseTensors = []
+            for i in range(attributeProto.SparseTensorsLength()):
+                if attributeProto.SparseTensors(i) is None:
+                    self.sparseTensors.append(None)
+                else:
+                    sparseTensorProto_ = onnx.SparseTensorProto.SparseTensorProtoT.InitFromObj(attributeProto.SparseTensors(i))
+                    self.sparseTensors.append(sparseTensorProto_)
+        if not attributeProto.TypeProtosIsNone():
+            self.typeProtos = []
+            for i in range(attributeProto.TypeProtosLength()):
+                if attributeProto.TypeProtos(i) is None:
+                    self.typeProtos.append(None)
+                else:
+                    typeProto_ = onnx.TypeProto.TypeProtoT.InitFromObj(attributeProto.TypeProtos(i))
+                    self.typeProtos.append(typeProto_)
+
+    # AttributeProtoT
+    def Pack(self, builder):
+        if self.name is not None:
+            name = builder.CreateString(self.name)
+        if self.refAttrName is not None:
+            refAttrName = builder.CreateString(self.refAttrName)
+        if self.docString is not None:
+            docString = builder.CreateString(self.docString)
+        if self.s is not None:
+            if np is not None and type(self.s) is np.ndarray:
+                s = builder.CreateNumpyVector(self.s)
+            else:
+                AttributeProtoStartSVector(builder, len(self.s))
+                for i in reversed(range(len(self.s))):
+                    builder.PrependUint8(self.s[i])
+                s = builder.EndVector()
+        if self.t is not None:
+            t = self.t.Pack(builder)
+        if self.g is not None:
+            g = self.g.Pack(builder)
+        if self.sparseTensor is not None:
+            sparseTensor = self.sparseTensor.Pack(builder)
+        if self.tp is not None:
+            tp = self.tp.Pack(builder)
+        if self.floats is not None:
+            if np is not None and type(self.floats) is np.ndarray:
+                floats = builder.CreateNumpyVector(self.floats)
+            else:
+                AttributeProtoStartFloatsVector(builder, len(self.floats))
+                for i in reversed(range(len(self.floats))):
+                    builder.PrependFloat32(self.floats[i])
+                floats = builder.EndVector()
+        if self.ints is not None:
+            if np is not None and type(self.ints) is np.ndarray:
+                ints = builder.CreateNumpyVector(self.ints)
+            else:
+                AttributeProtoStartIntsVector(builder, len(self.ints))
+                for i in reversed(range(len(self.ints))):
+                    builder.PrependInt64(self.ints[i])
+                ints = builder.EndVector()
+        if self.strings is not None:
+            stringslist = []
+            for i in range(len(self.strings)):
+                stringslist.append(builder.CreateString(self.strings[i]))
+            AttributeProtoStartStringsVector(builder, len(self.strings))
+            for i in reversed(range(len(self.strings))):
+                builder.PrependUOffsetTRelative(stringslist[i])
+            strings = builder.EndVector()
+        if self.tensors is not None:
+            tensorslist = []
+            for i in range(len(self.tensors)):
+                tensorslist.append(self.tensors[i].Pack(builder))
+            AttributeProtoStartTensorsVector(builder, len(self.tensors))
+            for i in reversed(range(len(self.tensors))):
+                builder.PrependUOffsetTRelative(tensorslist[i])
+            tensors = builder.EndVector()
+        if self.graphs is not None:
+            graphslist = []
+            for i in range(len(self.graphs)):
+                graphslist.append(self.graphs[i].Pack(builder))
+            AttributeProtoStartGraphsVector(builder, len(self.graphs))
+            for i in reversed(range(len(self.graphs))):
+                builder.PrependUOffsetTRelative(graphslist[i])
+            graphs = builder.EndVector()
+        if self.sparseTensors is not None:
+            sparseTensorslist = []
+            for i in range(len(self.sparseTensors)):
+                sparseTensorslist.append(self.sparseTensors[i].Pack(builder))
+            AttributeProtoStartSparseTensorsVector(builder, len(self.sparseTensors))
+            for i in reversed(range(len(self.sparseTensors))):
+                builder.PrependUOffsetTRelative(sparseTensorslist[i])
+            sparseTensors = builder.EndVector()
+        if self.typeProtos is not None:
+            typeProtoslist = []
+            for i in range(len(self.typeProtos)):
+                typeProtoslist.append(self.typeProtos[i].Pack(builder))
+            AttributeProtoStartTypeProtosVector(builder, len(self.typeProtos))
+            for i in reversed(range(len(self.typeProtos))):
+                builder.PrependUOffsetTRelative(typeProtoslist[i])
+            typeProtos = builder.EndVector()
+        AttributeProtoStart(builder)
+        if self.name is not None:
+            AttributeProtoAddName(builder, name)
+        if self.refAttrName is not None:
+            AttributeProtoAddRefAttrName(builder, refAttrName)
+        if self.docString is not None:
+            AttributeProtoAddDocString(builder, docString)
+        AttributeProtoAddType(builder, self.type)
+        AttributeProtoAddF(builder, self.f)
+        AttributeProtoAddI(builder, self.i)
+        if self.s is not None:
+            AttributeProtoAddS(builder, s)
+        if self.t is not None:
+            AttributeProtoAddT(builder, t)
+        if self.g is not None:
+            AttributeProtoAddG(builder, g)
+        if self.sparseTensor is not None:
+            AttributeProtoAddSparseTensor(builder, sparseTensor)
+        if self.tp is not None:
+            AttributeProtoAddTp(builder, tp)
+        if self.floats is not None:
+            AttributeProtoAddFloats(builder, floats)
+        if self.ints is not None:
+            AttributeProtoAddInts(builder, ints)
+        if self.strings is not None:
+            AttributeProtoAddStrings(builder, strings)
+        if self.tensors is not None:
+            AttributeProtoAddTensors(builder, tensors)
+        if self.graphs is not None:
+            AttributeProtoAddGraphs(builder, graphs)
+        if self.sparseTensors is not None:
+            AttributeProtoAddSparseTensors(builder, sparseTensors)
+        if self.typeProtos is not None:
+            AttributeProtoAddTypeProtos(builder, typeProtos)
+        attributeProto = AttributeProtoEnd(builder)
+        return attributeProto

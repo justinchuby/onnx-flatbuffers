@@ -61,3 +61,43 @@ def SegmentEnd(builder):
 
 def End(builder):
     return SegmentEnd(builder)
+
+
+class SegmentT(object):
+
+    # SegmentT
+    def __init__(self):
+        self.begin = 0  # type: int
+        self.end = 0  # type: int
+
+    @classmethod
+    def InitFromBuf(cls, buf, pos):
+        segment = Segment()
+        segment.Init(buf, pos)
+        return cls.InitFromObj(segment)
+
+    @classmethod
+    def InitFromPackedBuf(cls, buf, pos=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, pos)
+        return cls.InitFromBuf(buf, pos+n)
+
+    @classmethod
+    def InitFromObj(cls, segment):
+        x = SegmentT()
+        x._UnPack(segment)
+        return x
+
+    # SegmentT
+    def _UnPack(self, segment):
+        if segment is None:
+            return
+        self.begin = segment.Begin()
+        self.end = segment.End()
+
+    # SegmentT
+    def Pack(self, builder):
+        SegmentStart(builder)
+        SegmentAddBegin(builder, self.begin)
+        SegmentAddEnd(builder, self.end)
+        segment = SegmentEnd(builder)
+        return segment

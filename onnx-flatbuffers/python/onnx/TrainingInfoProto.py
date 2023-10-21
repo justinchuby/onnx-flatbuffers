@@ -143,3 +143,95 @@ def TrainingInfoProtoEnd(builder):
 
 def End(builder):
     return TrainingInfoProtoEnd(builder)
+
+import onnx.GraphProto
+import onnx.StringStringEntryProto
+try:
+    from typing import List, Optional
+except:
+    pass
+
+class TrainingInfoProtoT(object):
+
+    # TrainingInfoProtoT
+    def __init__(self):
+        self.initialization = None  # type: Optional[onnx.GraphProto.GraphProtoT]
+        self.algorithm = None  # type: Optional[onnx.GraphProto.GraphProtoT]
+        self.initializationBinding = None  # type: List[onnx.StringStringEntryProto.StringStringEntryProtoT]
+        self.updateBinding = None  # type: List[onnx.StringStringEntryProto.StringStringEntryProtoT]
+
+    @classmethod
+    def InitFromBuf(cls, buf, pos):
+        trainingInfoProto = TrainingInfoProto()
+        trainingInfoProto.Init(buf, pos)
+        return cls.InitFromObj(trainingInfoProto)
+
+    @classmethod
+    def InitFromPackedBuf(cls, buf, pos=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, pos)
+        return cls.InitFromBuf(buf, pos+n)
+
+    @classmethod
+    def InitFromObj(cls, trainingInfoProto):
+        x = TrainingInfoProtoT()
+        x._UnPack(trainingInfoProto)
+        return x
+
+    # TrainingInfoProtoT
+    def _UnPack(self, trainingInfoProto):
+        if trainingInfoProto is None:
+            return
+        if trainingInfoProto.Initialization() is not None:
+            self.initialization = onnx.GraphProto.GraphProtoT.InitFromObj(trainingInfoProto.Initialization())
+        if trainingInfoProto.Algorithm() is not None:
+            self.algorithm = onnx.GraphProto.GraphProtoT.InitFromObj(trainingInfoProto.Algorithm())
+        if not trainingInfoProto.InitializationBindingIsNone():
+            self.initializationBinding = []
+            for i in range(trainingInfoProto.InitializationBindingLength()):
+                if trainingInfoProto.InitializationBinding(i) is None:
+                    self.initializationBinding.append(None)
+                else:
+                    stringStringEntryProto_ = onnx.StringStringEntryProto.StringStringEntryProtoT.InitFromObj(trainingInfoProto.InitializationBinding(i))
+                    self.initializationBinding.append(stringStringEntryProto_)
+        if not trainingInfoProto.UpdateBindingIsNone():
+            self.updateBinding = []
+            for i in range(trainingInfoProto.UpdateBindingLength()):
+                if trainingInfoProto.UpdateBinding(i) is None:
+                    self.updateBinding.append(None)
+                else:
+                    stringStringEntryProto_ = onnx.StringStringEntryProto.StringStringEntryProtoT.InitFromObj(trainingInfoProto.UpdateBinding(i))
+                    self.updateBinding.append(stringStringEntryProto_)
+
+    # TrainingInfoProtoT
+    def Pack(self, builder):
+        if self.initialization is not None:
+            initialization = self.initialization.Pack(builder)
+        if self.algorithm is not None:
+            algorithm = self.algorithm.Pack(builder)
+        if self.initializationBinding is not None:
+            initializationBindinglist = []
+            for i in range(len(self.initializationBinding)):
+                initializationBindinglist.append(self.initializationBinding[i].Pack(builder))
+            TrainingInfoProtoStartInitializationBindingVector(builder, len(self.initializationBinding))
+            for i in reversed(range(len(self.initializationBinding))):
+                builder.PrependUOffsetTRelative(initializationBindinglist[i])
+            initializationBinding = builder.EndVector()
+        if self.updateBinding is not None:
+            updateBindinglist = []
+            for i in range(len(self.updateBinding)):
+                updateBindinglist.append(self.updateBinding[i].Pack(builder))
+            TrainingInfoProtoStartUpdateBindingVector(builder, len(self.updateBinding))
+            for i in reversed(range(len(self.updateBinding))):
+                builder.PrependUOffsetTRelative(updateBindinglist[i])
+            updateBinding = builder.EndVector()
+        TrainingInfoProtoStart(builder)
+        if self.initialization is not None:
+            TrainingInfoProtoAddInitialization(builder, initialization)
+        if self.algorithm is not None:
+            TrainingInfoProtoAddAlgorithm(builder, algorithm)
+        if self.initializationBinding is not None:
+            TrainingInfoProtoAddInitializationBinding(builder, initializationBinding)
+        if self.updateBinding is not None:
+            TrainingInfoProtoAddUpdateBinding(builder, updateBinding)
+        trainingInfoProto = TrainingInfoProtoEnd(builder)
+        return trainingInfoProto

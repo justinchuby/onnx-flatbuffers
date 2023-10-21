@@ -61,3 +61,46 @@ def Anonymous0End(builder):
 
 def End(builder):
     return Anonymous0End(builder)
+
+
+class Anonymous0T(object):
+
+    # Anonymous0T
+    def __init__(self):
+        self.dimValue = 0  # type: int
+        self.dimParam = None  # type: str
+
+    @classmethod
+    def InitFromBuf(cls, buf, pos):
+        anonymous0 = Anonymous0()
+        anonymous0.Init(buf, pos)
+        return cls.InitFromObj(anonymous0)
+
+    @classmethod
+    def InitFromPackedBuf(cls, buf, pos=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, pos)
+        return cls.InitFromBuf(buf, pos+n)
+
+    @classmethod
+    def InitFromObj(cls, anonymous0):
+        x = Anonymous0T()
+        x._UnPack(anonymous0)
+        return x
+
+    # Anonymous0T
+    def _UnPack(self, anonymous0):
+        if anonymous0 is None:
+            return
+        self.dimValue = anonymous0.DimValue()
+        self.dimParam = anonymous0.DimParam()
+
+    # Anonymous0T
+    def Pack(self, builder):
+        if self.dimParam is not None:
+            dimParam = builder.CreateString(self.dimParam)
+        Anonymous0Start(builder)
+        Anonymous0AddDimValue(builder, self.dimValue)
+        if self.dimParam is not None:
+            Anonymous0AddDimParam(builder, dimParam)
+        anonymous0 = Anonymous0End(builder)
+        return anonymous0

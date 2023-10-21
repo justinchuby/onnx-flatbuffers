@@ -72,3 +72,61 @@ def TensorShapeProtoEnd(builder):
 
 def End(builder):
     return TensorShapeProtoEnd(builder)
+
+import onnx.TensorShapeProto_.Dimension
+try:
+    from typing import List
+except:
+    pass
+
+class TensorShapeProtoT(object):
+
+    # TensorShapeProtoT
+    def __init__(self):
+        self.dim = None  # type: List[onnx.TensorShapeProto_.Dimension.DimensionT]
+
+    @classmethod
+    def InitFromBuf(cls, buf, pos):
+        tensorShapeProto = TensorShapeProto()
+        tensorShapeProto.Init(buf, pos)
+        return cls.InitFromObj(tensorShapeProto)
+
+    @classmethod
+    def InitFromPackedBuf(cls, buf, pos=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, pos)
+        return cls.InitFromBuf(buf, pos+n)
+
+    @classmethod
+    def InitFromObj(cls, tensorShapeProto):
+        x = TensorShapeProtoT()
+        x._UnPack(tensorShapeProto)
+        return x
+
+    # TensorShapeProtoT
+    def _UnPack(self, tensorShapeProto):
+        if tensorShapeProto is None:
+            return
+        if not tensorShapeProto.DimIsNone():
+            self.dim = []
+            for i in range(tensorShapeProto.DimLength()):
+                if tensorShapeProto.Dim(i) is None:
+                    self.dim.append(None)
+                else:
+                    dimension_ = onnx.TensorShapeProto_.Dimension.DimensionT.InitFromObj(tensorShapeProto.Dim(i))
+                    self.dim.append(dimension_)
+
+    # TensorShapeProtoT
+    def Pack(self, builder):
+        if self.dim is not None:
+            dimlist = []
+            for i in range(len(self.dim)):
+                dimlist.append(self.dim[i].Pack(builder))
+            TensorShapeProtoStartDimVector(builder, len(self.dim))
+            for i in reversed(range(len(self.dim))):
+                builder.PrependUOffsetTRelative(dimlist[i])
+            dim = builder.EndVector()
+        TensorShapeProtoStart(builder)
+        if self.dim is not None:
+            TensorShapeProtoAddDim(builder, dim)
+        tensorShapeProto = TensorShapeProtoEnd(builder)
+        return tensorShapeProto

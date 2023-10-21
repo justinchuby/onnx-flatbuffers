@@ -65,3 +65,52 @@ def MapEnd(builder):
 
 def End(builder):
     return MapEnd(builder)
+
+import onnx.TypeProto
+try:
+    from typing import Optional
+except:
+    pass
+
+class MapT(object):
+
+    # MapT
+    def __init__(self):
+        self.keyType = 0  # type: int
+        self.valueType = None  # type: Optional[onnx.TypeProto.TypeProtoT]
+
+    @classmethod
+    def InitFromBuf(cls, buf, pos):
+        map = Map()
+        map.Init(buf, pos)
+        return cls.InitFromObj(map)
+
+    @classmethod
+    def InitFromPackedBuf(cls, buf, pos=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, pos)
+        return cls.InitFromBuf(buf, pos+n)
+
+    @classmethod
+    def InitFromObj(cls, map):
+        x = MapT()
+        x._UnPack(map)
+        return x
+
+    # MapT
+    def _UnPack(self, map):
+        if map is None:
+            return
+        self.keyType = map.KeyType()
+        if map.ValueType() is not None:
+            self.valueType = onnx.TypeProto.TypeProtoT.InitFromObj(map.ValueType())
+
+    # MapT
+    def Pack(self, builder):
+        if self.valueType is not None:
+            valueType = self.valueType.Pack(builder)
+        MapStart(builder)
+        MapAddKeyType(builder, self.keyType)
+        if self.valueType is not None:
+            MapAddValueType(builder, valueType)
+        map = MapEnd(builder)
+        return map

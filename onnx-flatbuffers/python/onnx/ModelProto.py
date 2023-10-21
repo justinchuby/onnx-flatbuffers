@@ -278,3 +278,159 @@ def ModelProtoEnd(builder):
 
 def End(builder):
     return ModelProtoEnd(builder)
+
+import onnx.FunctionProto
+import onnx.GraphProto
+import onnx.OperatorSetIdProto
+import onnx.StringStringEntryProto
+import onnx.TrainingInfoProto
+try:
+    from typing import List, Optional
+except:
+    pass
+
+class ModelProtoT(object):
+
+    # ModelProtoT
+    def __init__(self):
+        self.irVersion = 0  # type: int
+        self.opsetImport = None  # type: List[onnx.OperatorSetIdProto.OperatorSetIdProtoT]
+        self.producerName = None  # type: str
+        self.producerVersion = None  # type: str
+        self.domain = None  # type: str
+        self.modelVersion = 0  # type: int
+        self.docString = None  # type: str
+        self.graph = None  # type: Optional[onnx.GraphProto.GraphProtoT]
+        self.metadataProps = None  # type: List[onnx.StringStringEntryProto.StringStringEntryProtoT]
+        self.trainingInfo = None  # type: List[onnx.TrainingInfoProto.TrainingInfoProtoT]
+        self.functions = None  # type: List[onnx.FunctionProto.FunctionProtoT]
+
+    @classmethod
+    def InitFromBuf(cls, buf, pos):
+        modelProto = ModelProto()
+        modelProto.Init(buf, pos)
+        return cls.InitFromObj(modelProto)
+
+    @classmethod
+    def InitFromPackedBuf(cls, buf, pos=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, pos)
+        return cls.InitFromBuf(buf, pos+n)
+
+    @classmethod
+    def InitFromObj(cls, modelProto):
+        x = ModelProtoT()
+        x._UnPack(modelProto)
+        return x
+
+    # ModelProtoT
+    def _UnPack(self, modelProto):
+        if modelProto is None:
+            return
+        self.irVersion = modelProto.IrVersion()
+        if not modelProto.OpsetImportIsNone():
+            self.opsetImport = []
+            for i in range(modelProto.OpsetImportLength()):
+                if modelProto.OpsetImport(i) is None:
+                    self.opsetImport.append(None)
+                else:
+                    operatorSetIdProto_ = onnx.OperatorSetIdProto.OperatorSetIdProtoT.InitFromObj(modelProto.OpsetImport(i))
+                    self.opsetImport.append(operatorSetIdProto_)
+        self.producerName = modelProto.ProducerName()
+        self.producerVersion = modelProto.ProducerVersion()
+        self.domain = modelProto.Domain()
+        self.modelVersion = modelProto.ModelVersion()
+        self.docString = modelProto.DocString()
+        if modelProto.Graph() is not None:
+            self.graph = onnx.GraphProto.GraphProtoT.InitFromObj(modelProto.Graph())
+        if not modelProto.MetadataPropsIsNone():
+            self.metadataProps = []
+            for i in range(modelProto.MetadataPropsLength()):
+                if modelProto.MetadataProps(i) is None:
+                    self.metadataProps.append(None)
+                else:
+                    stringStringEntryProto_ = onnx.StringStringEntryProto.StringStringEntryProtoT.InitFromObj(modelProto.MetadataProps(i))
+                    self.metadataProps.append(stringStringEntryProto_)
+        if not modelProto.TrainingInfoIsNone():
+            self.trainingInfo = []
+            for i in range(modelProto.TrainingInfoLength()):
+                if modelProto.TrainingInfo(i) is None:
+                    self.trainingInfo.append(None)
+                else:
+                    trainingInfoProto_ = onnx.TrainingInfoProto.TrainingInfoProtoT.InitFromObj(modelProto.TrainingInfo(i))
+                    self.trainingInfo.append(trainingInfoProto_)
+        if not modelProto.FunctionsIsNone():
+            self.functions = []
+            for i in range(modelProto.FunctionsLength()):
+                if modelProto.Functions(i) is None:
+                    self.functions.append(None)
+                else:
+                    functionProto_ = onnx.FunctionProto.FunctionProtoT.InitFromObj(modelProto.Functions(i))
+                    self.functions.append(functionProto_)
+
+    # ModelProtoT
+    def Pack(self, builder):
+        if self.opsetImport is not None:
+            opsetImportlist = []
+            for i in range(len(self.opsetImport)):
+                opsetImportlist.append(self.opsetImport[i].Pack(builder))
+            ModelProtoStartOpsetImportVector(builder, len(self.opsetImport))
+            for i in reversed(range(len(self.opsetImport))):
+                builder.PrependUOffsetTRelative(opsetImportlist[i])
+            opsetImport = builder.EndVector()
+        if self.producerName is not None:
+            producerName = builder.CreateString(self.producerName)
+        if self.producerVersion is not None:
+            producerVersion = builder.CreateString(self.producerVersion)
+        if self.domain is not None:
+            domain = builder.CreateString(self.domain)
+        if self.docString is not None:
+            docString = builder.CreateString(self.docString)
+        if self.graph is not None:
+            graph = self.graph.Pack(builder)
+        if self.metadataProps is not None:
+            metadataPropslist = []
+            for i in range(len(self.metadataProps)):
+                metadataPropslist.append(self.metadataProps[i].Pack(builder))
+            ModelProtoStartMetadataPropsVector(builder, len(self.metadataProps))
+            for i in reversed(range(len(self.metadataProps))):
+                builder.PrependUOffsetTRelative(metadataPropslist[i])
+            metadataProps = builder.EndVector()
+        if self.trainingInfo is not None:
+            trainingInfolist = []
+            for i in range(len(self.trainingInfo)):
+                trainingInfolist.append(self.trainingInfo[i].Pack(builder))
+            ModelProtoStartTrainingInfoVector(builder, len(self.trainingInfo))
+            for i in reversed(range(len(self.trainingInfo))):
+                builder.PrependUOffsetTRelative(trainingInfolist[i])
+            trainingInfo = builder.EndVector()
+        if self.functions is not None:
+            functionslist = []
+            for i in range(len(self.functions)):
+                functionslist.append(self.functions[i].Pack(builder))
+            ModelProtoStartFunctionsVector(builder, len(self.functions))
+            for i in reversed(range(len(self.functions))):
+                builder.PrependUOffsetTRelative(functionslist[i])
+            functions = builder.EndVector()
+        ModelProtoStart(builder)
+        ModelProtoAddIrVersion(builder, self.irVersion)
+        if self.opsetImport is not None:
+            ModelProtoAddOpsetImport(builder, opsetImport)
+        if self.producerName is not None:
+            ModelProtoAddProducerName(builder, producerName)
+        if self.producerVersion is not None:
+            ModelProtoAddProducerVersion(builder, producerVersion)
+        if self.domain is not None:
+            ModelProtoAddDomain(builder, domain)
+        ModelProtoAddModelVersion(builder, self.modelVersion)
+        if self.docString is not None:
+            ModelProtoAddDocString(builder, docString)
+        if self.graph is not None:
+            ModelProtoAddGraph(builder, graph)
+        if self.metadataProps is not None:
+            ModelProtoAddMetadataProps(builder, metadataProps)
+        if self.trainingInfo is not None:
+            ModelProtoAddTrainingInfo(builder, trainingInfo)
+        if self.functions is not None:
+            ModelProtoAddFunctions(builder, functions)
+        modelProto = ModelProtoEnd(builder)
+        return modelProto
