@@ -1,0 +1,264 @@
+// Generated from onnx.proto
+
+namespace onnx;
+
+enum Version : int {
+  _START_VERSION = 0,
+  IR_VERSION_2017_10_10 = 1,
+  IR_VERSION_2017_10_30 = 2,
+  IR_VERSION_2017_11_3 = 3,
+  IR_VERSION_2019_1_22 = 4,
+  IR_VERSION_2019_3_18 = 5,
+  IR_VERSION_2019_9_19 = 6,
+  IR_VERSION_2020_5_8 = 7,
+  IR_VERSION_2021_7_30 = 8,
+  IR_VERSION = 9,
+}
+
+namespace onnx.AttributeProto_;
+
+enum AttributeType : int {
+  UNDEFINED = 0,
+  FLOAT = 1,
+  INT = 2,
+  STRING = 3,
+  TENSOR = 4,
+  GRAPH = 5,
+  FLOATS = 6,
+  INTS = 7,
+  STRINGS = 8,
+  TENSORS = 9,
+  GRAPHS = 10,
+  SPARSE_TENSOR = 11,
+  SPARSE_TENSORS = 12,
+  TYPE_PROTO = 13,
+  TYPE_PROTOS = 14,
+}
+
+namespace onnx.TensorProto_;
+
+enum DataType : int {
+  UNDEFINED = 0,
+  FLOAT = 1,
+  UINT8 = 2,
+  INT8 = 3,
+  UINT16 = 4,
+  INT16 = 5,
+  INT32 = 6,
+  INT64 = 7,
+  STRING = 8,
+  BOOL = 9,
+  FLOAT16 = 10,
+  DOUBLE = 11,
+  UINT32 = 12,
+  UINT64 = 13,
+  COMPLEX64 = 14,
+  COMPLEX128 = 15,
+  BFLOAT16 = 16,
+  FLOAT8E4M3FN = 17,
+  FLOAT8E4M3FNUZ = 18,
+  FLOAT8E5M2 = 19,
+  FLOAT8E5M2FNUZ = 20,
+}
+
+enum DataLocation : int {
+  DEFAULT = 0,
+  EXTERNAL = 1,
+}
+
+namespace onnx;
+
+enum OperatorStatus : int {
+  EXPERIMENTAL = 0,
+  STABLE = 1,
+}
+
+table AttributeProto {
+  name:string;
+  ref_attr_name:string;
+  doc_string:string;
+  type:onnx.AttributeProto_.AttributeType;
+  f:float;
+  i:long;
+  s:[ubyte];
+  t:onnx.TensorProto;
+  g:onnx.GraphProto;
+  sparse_tensor:onnx.SparseTensorProto;
+  tp:onnx.TypeProto;
+  floats:[float];
+  ints:[long];
+  strings:[string];
+  tensors:[onnx.TensorProto];
+  graphs:[onnx.GraphProto];
+  sparse_tensors:[onnx.SparseTensorProto];
+  type_protos:[onnx.TypeProto];
+}
+
+table ValueInfoProto {
+  name:string;
+  type:onnx.TypeProto;
+  doc_string:string;
+}
+
+table NodeProto {
+  input:[string];
+  output:[string];
+  name:string;
+  op_type:string;
+  domain:string;
+  attribute:[onnx.AttributeProto];
+  doc_string:string;
+}
+
+table TrainingInfoProto {
+  initialization:onnx.GraphProto;
+  algorithm:onnx.GraphProto;
+  initialization_binding:[onnx.StringStringEntryProto];
+  update_binding:[onnx.StringStringEntryProto];
+}
+
+table ModelProto {
+  ir_version:long;
+  opset_import:[onnx.OperatorSetIdProto];
+  producer_name:string;
+  producer_version:string;
+  domain:string;
+  model_version:long;
+  doc_string:string;
+  graph:onnx.GraphProto;
+  metadata_props:[onnx.StringStringEntryProto];
+  training_info:[onnx.TrainingInfoProto];
+  functions:[onnx.FunctionProto];
+}
+
+table StringStringEntryProto {
+  key:string;
+  value:string;
+}
+
+table TensorAnnotation {
+  tensor_name:string;
+  quant_parameter_tensor_names:[onnx.StringStringEntryProto];
+}
+
+table GraphProto {
+  node:[onnx.NodeProto];
+  name:string;
+  initializer:[onnx.TensorProto];
+  sparse_initializer:[onnx.SparseTensorProto];
+  doc_string:string;
+  input:[onnx.ValueInfoProto];
+  output:[onnx.ValueInfoProto];
+  value_info:[onnx.ValueInfoProto];
+  quantization_annotation:[onnx.TensorAnnotation];
+}
+
+table TensorProto {
+  dims:[long];
+  data_type:int;
+  segment:onnx.TensorProto_.Segment;
+  float_data:[float];
+  int32_data:[int];
+  string_data:[string];
+  int64_data:[long];
+  name:string;
+  doc_string:string;
+  raw_data:[ubyte];
+  external_data:[onnx.StringStringEntryProto];
+  data_location:onnx.TensorProto_.DataLocation;
+  double_data:[double];
+  uint64_data:[ulong];
+}
+
+namespace onnx.TensorProto_;
+
+table Segment {
+  begin:long;
+  end:long;
+}
+
+namespace onnx;
+
+table SparseTensorProto {
+  values:onnx.TensorProto;
+  indices:onnx.TensorProto;
+  dims:[long];
+}
+
+table TensorShapeProto {
+  dim:[onnx.TensorShapeProto_.Dimension];
+}
+
+namespace onnx.TensorShapeProto_;
+
+table Dimension {
+  value:onnx.TensorShapeProto_.Dimension_.Anonymous0;
+  denotation:string;
+}
+
+namespace onnx.TensorShapeProto_.Dimension_;
+
+table Anonymous0 {
+  dim_value:long;
+  dim_param:string;
+}
+
+namespace onnx;
+
+table TypeProto {
+  value:onnx.TypeProto_.Anonymous1;
+  denotation:string;
+}
+
+namespace onnx.TypeProto_;
+
+table Tensor {
+  elem_type:int;
+  shape:onnx.TensorShapeProto;
+}
+
+table Sequence {
+  elem_type:onnx.TypeProto;
+}
+
+table Map {
+  key_type:int;
+  value_type:onnx.TypeProto;
+}
+
+table Optional {
+  elem_type:onnx.TypeProto;
+}
+
+table SparseTensor {
+  elem_type:int;
+  shape:onnx.TensorShapeProto;
+}
+
+table Anonymous1 {
+  tensor_type:onnx.TypeProto_.Tensor;
+  sequence_type:onnx.TypeProto_.Sequence;
+  map_type:onnx.TypeProto_.Map;
+  optional_type:onnx.TypeProto_.Optional;
+  sparse_tensor_type:onnx.TypeProto_.SparseTensor;
+}
+
+namespace onnx;
+
+table OperatorSetIdProto {
+  domain:string;
+  version:long;
+}
+
+table FunctionProto {
+  name:string;
+  input:[string];
+  output:[string];
+  attribute:[string];
+  attribute_proto:[onnx.AttributeProto];
+  node:[onnx.NodeProto];
+  doc_string:string;
+  opset_import:[onnx.OperatorSetIdProto];
+  domain:string;
+}
+
