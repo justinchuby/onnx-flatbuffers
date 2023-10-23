@@ -86,7 +86,7 @@ def TensorAnnotationEnd(builder):
 def End(builder):
     return TensorAnnotationEnd(builder)
 
-import onnx.StringStringEntryProto
+import onnxfbs.protos.StringStringEntryProto
 try:
     from typing import List
 except:

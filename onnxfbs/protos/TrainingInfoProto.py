@@ -144,8 +144,8 @@ def TrainingInfoProtoEnd(builder):
 def End(builder):
     return TrainingInfoProtoEnd(builder)
 
-import onnx.GraphProto
-import onnx.StringStringEntryProto
+import onnxfbs.protos.GraphProto
+import onnxfbs.protos.StringStringEntryProto
 try:
     from typing import List, Optional
 except:

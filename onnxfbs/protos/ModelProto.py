@@ -279,11 +279,11 @@ def ModelProtoEnd(builder):
 def End(builder):
     return ModelProtoEnd(builder)
 
-import onnx.FunctionProto
-import onnx.GraphProto
-import onnx.OperatorSetIdProto
-import onnx.StringStringEntryProto
-import onnx.TrainingInfoProto
+import onnxfbs.protos.FunctionProto
+import onnxfbs.protos.GraphProto
+import onnxfbs.protos.OperatorSetIdProto
+import onnxfbs.protos.StringStringEntryProto
+import onnxfbs.protos.TrainingInfoProto
 try:
     from typing import List, Optional
 except:

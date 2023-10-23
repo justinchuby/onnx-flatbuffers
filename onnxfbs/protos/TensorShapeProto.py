@@ -73,7 +73,7 @@ def TensorShapeProtoEnd(builder):
 def End(builder):
     return TensorShapeProtoEnd(builder)
 
-import onnx.TensorShapeProto_.Dimension
+import onnxfbs.protos.TensorShapeProto_.Dimension
 try:
     from typing import List
 except:

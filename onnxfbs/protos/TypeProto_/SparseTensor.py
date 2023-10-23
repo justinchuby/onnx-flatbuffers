@@ -66,7 +66,7 @@ def SparseTensorEnd(builder):
 def End(builder):
     return SparseTensorEnd(builder)
 
-import onnx.TensorShapeProto
+import onnxfbs.protos.TensorShapeProto
 try:
     from typing import Optional
 except:

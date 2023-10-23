@@ -66,7 +66,7 @@ def TypeProtoEnd(builder):
 def End(builder):
     return TypeProtoEnd(builder)
 
-import onnx.TypeProto_.Anonymous1
+import onnxfbs.protos.TypeProto_.Anonymous1
 try:
     from typing import Optional
 except:

@@ -53,7 +53,7 @@ def SequenceEnd(builder):
 def End(builder):
     return SequenceEnd(builder)
 
-import onnx.TypeProto
+import onnxfbs.protos.TypeProto
 try:
     from typing import Optional
 except:

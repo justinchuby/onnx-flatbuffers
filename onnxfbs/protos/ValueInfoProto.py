@@ -79,7 +79,7 @@ def ValueInfoProtoEnd(builder):
 def End(builder):
     return ValueInfoProtoEnd(builder)
 
-import onnx.TypeProto
+import onnxfbs.protos.TypeProto
 try:
     from typing import Optional
 except:

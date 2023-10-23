@@ -66,7 +66,7 @@ def TensorEnd(builder):
 def End(builder):
     return TensorEnd(builder)
 
-import onnx.TensorShapeProto
+import onnxfbs.protos.TensorShapeProto
 try:
     from typing import Optional
 except:

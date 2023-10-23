@@ -66,7 +66,7 @@ def DimensionEnd(builder):
 def End(builder):
     return DimensionEnd(builder)
 
-import onnx.TensorShapeProto_.Dimension_.Anonymous0
+import onnxfbs.protos.TensorShapeProto_.Dimension_.Anonymous0
 try:
     from typing import Optional
 except:

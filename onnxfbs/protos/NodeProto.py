@@ -189,7 +189,7 @@ def NodeProtoEnd(builder):
 def End(builder):
     return NodeProtoEnd(builder)
 
-import onnx.AttributeProto
+import onnxfbs.protos.AttributeProto
 try:
     from typing import List
 except:

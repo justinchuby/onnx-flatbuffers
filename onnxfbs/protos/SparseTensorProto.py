@@ -109,7 +109,7 @@ def SparseTensorProtoEnd(builder):
 def End(builder):
     return SparseTensorProtoEnd(builder)
 
-import onnx.TensorProto
+import onnxfbs.protos.TensorProto
 try:
     from typing import List, Optional
 except:

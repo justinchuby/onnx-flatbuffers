@@ -321,11 +321,11 @@ def GraphProtoEnd(builder):
 def End(builder):
     return GraphProtoEnd(builder)
 
-import onnx.NodeProto
-import onnx.SparseTensorProto
-import onnx.TensorAnnotation
-import onnx.TensorProto
-import onnx.ValueInfoProto
+import onnxfbs.protos.NodeProto
+import onnxfbs.protos.SparseTensorProto
+import onnxfbs.protos.TensorAnnotation
+import onnxfbs.protos.TensorProto
+import onnxfbs.protos.ValueInfoProto
 try:
     from typing import List
 except:

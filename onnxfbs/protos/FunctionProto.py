@@ -282,9 +282,9 @@ def FunctionProtoEnd(builder):
 def End(builder):
     return FunctionProtoEnd(builder)
 
-import onnx.AttributeProto
-import onnx.NodeProto
-import onnx.OperatorSetIdProto
+import onnxfbs.protos.AttributeProto
+import onnxfbs.protos.NodeProto
+import onnxfbs.protos.OperatorSetIdProto
 try:
     from typing import List
 except:

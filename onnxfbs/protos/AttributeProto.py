@@ -479,10 +479,10 @@ def AttributeProtoEnd(builder):
 def End(builder):
     return AttributeProtoEnd(builder)
 
-import onnx.GraphProto
-import onnx.SparseTensorProto
-import onnx.TensorProto
-import onnx.TypeProto
+import onnxfbs.protos.GraphProto
+import onnxfbs.protos.SparseTensorProto
+import onnxfbs.protos.TensorProto
+import onnxfbs.protos.TypeProto
 try:
     from typing import List, Optional
 except:

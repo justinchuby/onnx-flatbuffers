@@ -121,11 +121,11 @@ def Anonymous1End(builder):
 def End(builder):
     return Anonymous1End(builder)
 
-import onnx.TypeProto_.Map
-import onnx.TypeProto_.Optional
-import onnx.TypeProto_.Sequence
-import onnx.TypeProto_.SparseTensor
-import onnx.TypeProto_.Tensor
+import onnxfbs.protos.TypeProto_.Map
+import onnxfbs.protos.TypeProto_.Optional
+import onnxfbs.protos.TypeProto_.Sequence
+import onnxfbs.protos.TypeProto_.SparseTensor
+import onnxfbs.protos.TypeProto_.Tensor
 try:
     from typing import Optional
 except:

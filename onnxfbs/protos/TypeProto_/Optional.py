@@ -53,7 +53,7 @@ def OptionalEnd(builder):
 def End(builder):
     return OptionalEnd(builder)
 
-import onnx.TypeProto
+import onnxfbs.protos.TypeProto
 try:
     from typing import Optional
 except:

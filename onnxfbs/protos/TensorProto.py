@@ -447,8 +447,8 @@ def TensorProtoEnd(builder):
 def End(builder):
     return TensorProtoEnd(builder)
 
-import onnx.StringStringEntryProto
-import onnx.TensorProto_.Segment
+import onnxfbs.protos.StringStringEntryProto
+import onnxfbs.protos.TensorProto_.Segment
 try:
     from typing import List, Optional
 except:
