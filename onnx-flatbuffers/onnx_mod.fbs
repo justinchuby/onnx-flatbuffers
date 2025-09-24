@@ -4,7 +4,7 @@
 // 2. Maintain field names as in onnx.proto as much as possible (keep plurality)
 // 3. Renamed table names to remove "Proto" suffix
 // 4. Flat namespaces to avoid deep nesting (or create a namespace for DeviceConfiguration?)
-// 5. Some names are simplified: TensorShape -> Shape
+// 5. Some names are simplified: TensorShape -> Shape, type_protos -> types
 
 namespace onnx;
 
@@ -95,7 +95,7 @@ table Attribute {
   t:Tensor;
   g:Graph;
   sparse_tensor:SparseTensor;
-  tp:Type;
+  tp:TypeInfo;
 
   floats:[float32];
   ints:[int64];
@@ -103,7 +103,7 @@ table Attribute {
   tensors:[Tensor];
   graphs:[Graph];
   sparse_tensors:[SparseTensor];
-  type_protos:[Type];
+  types:[TypeInfo];
 }
 
 table IntIntListEntry {
@@ -198,6 +198,8 @@ table Dimension {
   denotation:string;
 }
 
+// Use an enum instead of union to represent the oneof field because union
+// does not support int types
 enum DimensionValueType : int8 {
   UNKNOWN = 0,
   VALUE = 1,
@@ -219,7 +221,7 @@ union ValueType {
 }
 
 // pb:TypeProto
-table Type {
+table TypeInfo {
   value:ValueType;
   denotation:string;
 }
@@ -232,18 +234,18 @@ table TensorType {
 
 // pb:TypeProto.Sequence
 table SequenceType {
-  elem_type:Type;
+  elem_type:ValueType;
 }
 
 // pb:TypeProto.Map
 table MapType {
-  key_type:int;
-  value_type:Type;
+  key_type:DataType;
+  value_type:ValueType;
 }
 
 // pb:TypeProto.Optional
 table OptionalType {
-  elem_type:Type;
+  elem_type:ValueType;
 }
 
 // pb:TypeProto.SparseTensor
@@ -261,7 +263,8 @@ table OperatorSetId {
 // pb:ValueInfoProto
 table ValueInfo {
   name:string;
-  type:Type;
+  type:TypeInfo;
+
   doc_string:string;
   metadata_props:[StringStringEntry];
 }
@@ -317,8 +320,8 @@ table Function {
   attribute:[Attribute];
 
   node:[Node];
-
   value_info:[ValueInfo];
+
   doc_string:string;
   metadata_props:[StringStringEntry];
 }
