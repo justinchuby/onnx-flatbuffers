@@ -2408,11 +2408,11 @@ impl<'a> Tensor<'a> {
     unsafe { self._tab.get::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<'a, i64>>>(Tensor::VT_DIMS, None)}
   }
   #[inline]
-  pub fn data_type(&self) -> i32 {
+  pub fn data_type(&self) -> DataType {
     // Safety:
     // Created from valid Table for this object
     // which contains a valid value in this slot
-    unsafe { self._tab.get::<i32>(Tensor::VT_DATA_TYPE, Some(0)).unwrap()}
+    unsafe { self._tab.get::<DataType>(Tensor::VT_DATA_TYPE, Some(DataType::UNDEFINED)).unwrap()}
   }
   #[inline]
   pub fn raw_data(&self) -> Option<flatbuffers::Vector<'a, u8>> {
@@ -2461,7 +2461,7 @@ impl flatbuffers::Verifiable for Tensor<'_> {
      .visit_field::<flatbuffers::ForwardsUOffset<&str>>("name", Self::VT_NAME, false)?
      .visit_field::<flatbuffers::ForwardsUOffset<&str>>("doc_string", Self::VT_DOC_STRING, false)?
      .visit_field::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<'_, i64>>>("dims", Self::VT_DIMS, false)?
-     .visit_field::<i32>("data_type", Self::VT_DATA_TYPE, false)?
+     .visit_field::<DataType>("data_type", Self::VT_DATA_TYPE, false)?
      .visit_field::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<'_, u8>>>("raw_data", Self::VT_RAW_DATA, false)?
      .visit_field::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<'_, flatbuffers::ForwardsUOffset<&'_ str>>>>("string_data", Self::VT_STRING_DATA, false)?
      .visit_field::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<'_, flatbuffers::ForwardsUOffset<StringStringEntry>>>>("external_data", Self::VT_EXTERNAL_DATA, false)?
@@ -2475,7 +2475,7 @@ pub struct TensorArgs<'a> {
     pub name: Option<flatbuffers::WIPOffset<&'a str>>,
     pub doc_string: Option<flatbuffers::WIPOffset<&'a str>>,
     pub dims: Option<flatbuffers::WIPOffset<flatbuffers::Vector<'a, i64>>>,
-    pub data_type: i32,
+    pub data_type: DataType,
     pub raw_data: Option<flatbuffers::WIPOffset<flatbuffers::Vector<'a, u8>>>,
     pub string_data: Option<flatbuffers::WIPOffset<flatbuffers::Vector<'a, flatbuffers::ForwardsUOffset<&'a str>>>>,
     pub external_data: Option<flatbuffers::WIPOffset<flatbuffers::Vector<'a, flatbuffers::ForwardsUOffset<StringStringEntry<'a>>>>>,
@@ -2489,7 +2489,7 @@ impl<'a> Default for TensorArgs<'a> {
       name: None,
       doc_string: None,
       dims: None,
-      data_type: 0,
+      data_type: DataType::UNDEFINED,
       raw_data: None,
       string_data: None,
       external_data: None,
@@ -2517,8 +2517,8 @@ impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> TensorBuilder<'a, 'b, A> {
     self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(Tensor::VT_DIMS, dims);
   }
   #[inline]
-  pub fn add_data_type(&mut self, data_type: i32) {
-    self.fbb_.push_slot::<i32>(Tensor::VT_DATA_TYPE, data_type, 0);
+  pub fn add_data_type(&mut self, data_type: DataType) {
+    self.fbb_.push_slot::<DataType>(Tensor::VT_DATA_TYPE, data_type, DataType::UNDEFINED);
   }
   #[inline]
   pub fn add_raw_data(&mut self, raw_data: flatbuffers::WIPOffset<flatbuffers::Vector<'b , u8>>) {

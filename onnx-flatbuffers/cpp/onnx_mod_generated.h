@@ -1770,11 +1770,11 @@ struct Tensor FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   ::flatbuffers::Vector<int64_t> *mutable_dims() {
     return GetPointer<::flatbuffers::Vector<int64_t> *>(VT_DIMS);
   }
-  int32_t data_type() const {
-    return GetField<int32_t>(VT_DATA_TYPE, 0);
+  onnx::DataType data_type() const {
+    return static_cast<onnx::DataType>(GetField<int32_t>(VT_DATA_TYPE, 0));
   }
-  bool mutate_data_type(int32_t _data_type = 0) {
-    return SetField<int32_t>(VT_DATA_TYPE, _data_type, 0);
+  bool mutate_data_type(onnx::DataType _data_type = static_cast<onnx::DataType>(0)) {
+    return SetField<int32_t>(VT_DATA_TYPE, static_cast<int32_t>(_data_type), 0);
   }
   const ::flatbuffers::Vector<uint8_t> *raw_data() const {
     return GetPointer<const ::flatbuffers::Vector<uint8_t> *>(VT_RAW_DATA);
@@ -1844,8 +1844,8 @@ struct TensorBuilder {
   void add_dims(::flatbuffers::Offset<::flatbuffers::Vector<int64_t>> dims) {
     fbb_.AddOffset(Tensor::VT_DIMS, dims);
   }
-  void add_data_type(int32_t data_type) {
-    fbb_.AddElement<int32_t>(Tensor::VT_DATA_TYPE, data_type, 0);
+  void add_data_type(onnx::DataType data_type) {
+    fbb_.AddElement<int32_t>(Tensor::VT_DATA_TYPE, static_cast<int32_t>(data_type), 0);
   }
   void add_raw_data(::flatbuffers::Offset<::flatbuffers::Vector<uint8_t>> raw_data) {
     fbb_.AddOffset(Tensor::VT_RAW_DATA, raw_data);
@@ -1878,7 +1878,7 @@ inline ::flatbuffers::Offset<Tensor> CreateTensor(
     ::flatbuffers::Offset<::flatbuffers::String> name = 0,
     ::flatbuffers::Offset<::flatbuffers::String> doc_string = 0,
     ::flatbuffers::Offset<::flatbuffers::Vector<int64_t>> dims = 0,
-    int32_t data_type = 0,
+    onnx::DataType data_type = onnx::DataType::UNDEFINED,
     ::flatbuffers::Offset<::flatbuffers::Vector<uint8_t>> raw_data = 0,
     ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> string_data = 0,
     ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<onnx::StringStringEntry>>> external_data = 0,
@@ -1907,7 +1907,7 @@ inline ::flatbuffers::Offset<Tensor> CreateTensorDirect(
     const char *name = nullptr,
     const char *doc_string = nullptr,
     const std::vector<int64_t> *dims = nullptr,
-    int32_t data_type = 0,
+    onnx::DataType data_type = onnx::DataType::UNDEFINED,
     const std::vector<uint8_t> *raw_data = nullptr,
     const std::vector<::flatbuffers::Offset<::flatbuffers::String>> *string_data = nullptr,
     const std::vector<::flatbuffers::Offset<onnx::StringStringEntry>> *external_data = nullptr,
@@ -4583,14 +4583,15 @@ inline const ::flatbuffers::TypeTable *TensorTypeTable() {
     { ::flatbuffers::ET_STRING, 0, -1 },
     { ::flatbuffers::ET_STRING, 0, -1 },
     { ::flatbuffers::ET_LONG, 1, -1 },
-    { ::flatbuffers::ET_INT, 0, -1 },
+    { ::flatbuffers::ET_INT, 0, 0 },
     { ::flatbuffers::ET_UCHAR, 1, -1 },
     { ::flatbuffers::ET_STRING, 1, -1 },
-    { ::flatbuffers::ET_SEQUENCE, 1, 0 },
-    { ::flatbuffers::ET_UCHAR, 0, 1 },
-    { ::flatbuffers::ET_SEQUENCE, 1, 0 }
+    { ::flatbuffers::ET_SEQUENCE, 1, 1 },
+    { ::flatbuffers::ET_UCHAR, 0, 2 },
+    { ::flatbuffers::ET_SEQUENCE, 1, 1 }
   };
   static const ::flatbuffers::TypeFunction type_refs[] = {
+    onnx::DataTypeTypeTable,
     onnx::StringStringEntryTypeTable,
     onnx::TensorDataLocationTypeTable
   };

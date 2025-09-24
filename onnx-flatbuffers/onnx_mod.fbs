@@ -165,7 +165,7 @@ table Tensor {
   doc_string:string;
 
   dims:[int64];
-  data_type:int;
+  data_type:DataType;
 
   raw_data:[ubyte];
   string_data:[string];
