@@ -6,8 +6,10 @@
 // 3. Renamed table names to remove "Proto" suffix
 // 4. Flat namespaces to avoid deep nesting (or create a namespace for DeviceConfiguration?)
 // 5. Some names are simplified: TensorShape -> Shape, type_protos -> types
-// 6: Compatibility with protobuf: IR 8<=version<=15 can be converted to/from protobuf
-//    After which onnx is transitioned to use flatbuffers only. We can use the .onnx2 extension
+// 6. Compatibility with protobuf: IR 12<=version<=15 can be converted to/from protobuf
+//    After which onnx is transitioned to use flatbuffers only. IR<12 can be converted to
+//    protobuf IRv12 first.
+// 7. We can use the .onnx2 extension
 
 namespace onnx;
 
