@@ -3,7 +3,8 @@
 // 1. Simplified raw_data in Tensor
 // 2. Maintain field names as in onnx.proto as much as possible (keep plurality)
 // 3. Renamed table names to remove "Proto" suffix
-// 5. Flat namespaces to avoid deep nesting (or create a namespace for DeviceConfiguration?)
+// 4. Flat namespaces to avoid deep nesting (or create a namespace for DeviceConfiguration?)
+// 5. Some names are simplified: TensorShape -> Shape
 
 namespace onnx;
 
@@ -209,6 +210,14 @@ table DimensionValue {
   dim_param:string;
 }
 
+union ValueType {
+  tensor_type:TensorType,
+  sequence_type:SequenceType,
+  map_type:MapType,
+  optional_type:OptionalType,
+  sparse_tensor_type:SparseTensorType
+}
+
 // pb:TypeProto
 table Type {
   value:ValueType;
@@ -218,7 +227,7 @@ table Type {
 // pb:TypeProto.Tensor
 table TensorType {
   elem_type:DataType;
-  shape:TensorShape;
+  shape:Shape;
 }
 
 // pb:TypeProto.Sequence
@@ -240,15 +249,7 @@ table OptionalType {
 // pb:TypeProto.SparseTensor
 table SparseTensorType {
   elem_type:DataType;
-  shape:TensorShape;
-}
-
-union ValueType {
-  tensor_type:TensorType;
-  sequence_type:SequenceType;
-  map_type:MapType;
-  optional_type:OptionalType;
-  sparse_tensor_type:SparseTensorType;
+  shape:Shape;
 }
 
 // pb:OperatorSetIdProto
