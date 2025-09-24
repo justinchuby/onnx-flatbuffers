@@ -9,6 +9,9 @@
 // 6. Compatibility with protobuf: IR 12<=version<=15 can be converted to/from protobuf
 //    After which onnx is transitioned to use flatbuffers only. IR<12 can be converted to
 //    protobuf IRv12 first.
+//    However, if we decide to keep compatibility with protobuf forever,
+//    We can host onnx.fbs and maintain it in sync with onnx.proto. The definitions
+//    can be exposed in the onnx.fbs. namespace for the python package.
 // 7. We can use the .onnx2 extension
 
 namespace onnx;
