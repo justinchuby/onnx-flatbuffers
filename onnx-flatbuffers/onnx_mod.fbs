@@ -319,7 +319,7 @@ table Function {
   input:[string];
   output:[string];
 
-  // NOTE: attribute:string is removed
+  // NOTE: attribute:string is removed so that all attributes can have type information
   attribute:[Attribute];
 
   node:[Node];
