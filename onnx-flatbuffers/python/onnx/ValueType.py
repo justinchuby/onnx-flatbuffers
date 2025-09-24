@@ -9,24 +9,3 @@ class ValueType(object):
     map_type = 3
     optional_type = 4
     sparse_tensor_type = 5
-
-def ValueTypeCreator(unionType, table):
-    from flatbuffers.table import Table
-    if not isinstance(table, Table):
-        return None
-    if unionType == ValueType.tensor_type:
-        import onnx.TensorType
-        return onnx.TensorType.TensorTypeT.InitFromBuf(table.Bytes, table.Pos)
-    if unionType == ValueType.sequence_type:
-        import onnx.SequenceType
-        return onnx.SequenceType.SequenceTypeT.InitFromBuf(table.Bytes, table.Pos)
-    if unionType == ValueType.map_type:
-        import onnx.MapType
-        return onnx.MapType.MapTypeT.InitFromBuf(table.Bytes, table.Pos)
-    if unionType == ValueType.optional_type:
-        import onnx.OptionalType
-        return onnx.OptionalType.OptionalTypeT.InitFromBuf(table.Bytes, table.Pos)
-    if unionType == ValueType.sparse_tensor_type:
-        import onnx.SparseTensorType
-        return onnx.SparseTensorType.SparseTensorTypeT.InitFromBuf(table.Bytes, table.Pos)
-    return None
