@@ -18,8 +18,6 @@ enum Version : int {
   IR_VERSION = 12,
 }
 
-union Dim { long, string }
-
 enum AttributeType : int {
   UNDEFINED = 0,
   FLOAT = 1,
@@ -140,8 +138,10 @@ table ShardedDimProto {
   simple_sharding:[onnx.SimpleShardedDimProto];
 }
 
+union DimValue { long, string }
+
 table SimpleShardedDimProto {
-  dim:Dim;
+  dim:DimValue;
   num_shards:long;
 }
 
@@ -230,7 +230,7 @@ table TensorShapeProto {
 }
 
 table Dimension {
-  value:Dim;
+  value:DimValue;
   denotation:string;
 }
 
