@@ -367,10 +367,10 @@ def _convert_node(builder: flatbuffers.Builder, node: _protocols.NodeProtocol) -
 
     # Convert inputs vector
     input_offsets = []
-    for input_name in node.inputs:
-        if input_name:  # Skip empty input names
-            input_offset = builder.CreateString(input_name)
-            input_offsets.append(input_offset)
+    for value in node.inputs:
+        input_name = value.name or ""
+        input_offset = builder.CreateString(input_name)
+        input_offsets.append(input_offset)
 
     # Create inputs vector
     inputs_vector = None
@@ -382,10 +382,10 @@ def _convert_node(builder: flatbuffers.Builder, node: _protocols.NodeProtocol) -
 
     # Convert outputs vector
     output_offsets = []
-    for output_name in node.outputs:
-        if output_name:  # Skip empty output names
-            output_offset = builder.CreateString(output_name)
-            output_offsets.append(output_offset)
+    for value in node.outputs:
+        output_name = value.name or ""
+        output_offset = builder.CreateString(output_name)
+        output_offsets.append(output_offset)
 
     # Create outputs vector
     outputs_vector = None
@@ -397,7 +397,7 @@ def _convert_node(builder: flatbuffers.Builder, node: _protocols.NodeProtocol) -
 
     # Convert attributes vector
     attribute_offsets = []
-    if hasattr(node, 'attributes') and node.attributes:
+    if node.attributes:
         for attr_name, attr_value in node.attributes.items():
             # Create a simple attribute object from the name-value pair
             attr_offset = _convert_node_attribute(builder, attr_name, attr_value)
