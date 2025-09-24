@@ -1,7 +1,8 @@
-// Generated from proto
+// Generated from proto and modified
+// Reference https://github.com/microsoft/onnxruntime/blob/main/onnxruntime/core/flatbuffers/schema/ort.fbs
 // Design decisions:
 // 1. Simplified raw_data in Tensor
-// 2. Maintain field names as in onnx.proto as much as possible (keep plurality)
+// 2. Maintain field names as in onnx.proto as much as possible (maintain original plurality)
 // 3. Renamed table names to remove "Proto" suffix
 // 4. Flat namespaces to avoid deep nesting (or create a namespace for DeviceConfiguration?)
 // 5. Some names are simplified: TensorShape -> Shape, type_protos -> types
