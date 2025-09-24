@@ -18,7 +18,7 @@ enum Version : int {
   IR_VERSION = 12,
 }
 
-namespace onnx.AttributeProto_;
+union Dim { long, string }
 
 enum AttributeType : int {
   UNDEFINED = 0,
@@ -37,8 +37,6 @@ enum AttributeType : int {
   TYPE_PROTO = 13,
   TYPE_PROTOS = 14,
 }
-
-namespace onnx.TensorProto_;
 
 enum DataType : int {
   UNDEFINED = 0,
@@ -68,12 +66,10 @@ enum DataType : int {
   FLOAT8E8M0 = 24,
 }
 
-enum DataLocation : int {
+enum TensorDataLocation : int {
   DEFAULT = 0,
   EXTERNAL = 1,
 }
-
-namespace onnx;
 
 enum OperatorStatus : int {
   EXPERIMENTAL = 0,
@@ -84,7 +80,7 @@ table AttributeProto {
   name:string;
   ref_attr_name:string;
   doc_string:string;
-  type:onnx.AttributeProto_.AttributeType;
+  type:AttributeType;
   f:float;
   i:long;
   s:[ubyte];
@@ -145,18 +141,9 @@ table ShardedDimProto {
 }
 
 table SimpleShardedDimProto {
-  dim:onnx.SimpleShardedDimProto_.Anonymous0;
+  dim:Dim;
   num_shards:long;
 }
-
-namespace onnx.SimpleShardedDimProto_;
-
-table Anonymous0 {
-  dim_value:long;
-  dim_param:string;
-}
-
-namespace onnx;
 
 table TrainingInfoProto {
   initialization:onnx.GraphProto;
@@ -212,7 +199,7 @@ table GraphProto {
 table TensorProto {
   dims:[long];
   data_type:int;
-  segment:onnx.TensorProto_.Segment;
+  segment:TensorSegment;
   float_data:[float];
   int32_data:[int];
   string_data:[string];
@@ -221,20 +208,16 @@ table TensorProto {
   doc_string:string;
   raw_data:[ubyte];
   external_data:[onnx.StringStringEntryProto];
-  data_location:onnx.TensorProto_.DataLocation;
+  data_location:TensorDataLocation;
   double_data:[double];
   uint64_data:[ulong];
   metadata_props:[onnx.StringStringEntryProto];
 }
 
-namespace onnx.TensorProto_;
-
-table Segment {
+table TensorSegment {
   begin:long;
   end:long;
 }
-
-namespace onnx;
 
 table SparseTensorProto {
   values:onnx.TensorProto;
@@ -243,64 +226,49 @@ table SparseTensorProto {
 }
 
 table TensorShapeProto {
-  dim:[onnx.TensorShapeProto_.Dimension];
+  dim:[Dimension];
 }
-
-namespace onnx.TensorShapeProto_;
 
 table Dimension {
-  value:onnx.TensorShapeProto_.Dimension_.Anonymous1;
+  value:Dim;
   denotation:string;
 }
-
-namespace onnx.TensorShapeProto_.Dimension_;
-
-table Anonymous1 {
-  dim_value:long;
-  dim_param:string;
-}
-
-namespace onnx;
 
 table TypeProto {
-  value:onnx.TypeProto_.Anonymous2;
+  value:ValueType;
   denotation:string;
 }
 
-namespace onnx.TypeProto_;
-
-table Tensor {
+table TensorType {
   elem_type:int;
   shape:onnx.TensorShapeProto;
 }
 
-table Sequence {
+table SequenceType {
   elem_type:onnx.TypeProto;
 }
 
-table Map {
+table MapType {
   key_type:int;
   value_type:onnx.TypeProto;
 }
 
-table Optional {
+table OptionalType {
   elem_type:onnx.TypeProto;
 }
 
-table SparseTensor {
+table SparseTensorType {
   elem_type:int;
   shape:onnx.TensorShapeProto;
 }
 
-table Anonymous2 {
-  tensor_type:onnx.TypeProto_.Tensor;
-  sequence_type:onnx.TypeProto_.Sequence;
-  map_type:onnx.TypeProto_.Map;
-  optional_type:onnx.TypeProto_.Optional;
-  sparse_tensor_type:onnx.TypeProto_.SparseTensor;
+Union ValueType {
+  TensorType,
+  SequenceType,
+  MapType,
+  OptionalType,
+  SparseTensorType,
 }
-
-namespace onnx;
 
 table OperatorSetIdProto {
   domain:string;
@@ -321,4 +289,3 @@ table FunctionProto {
   value_info:[onnx.ValueInfoProto];
   metadata_props:[onnx.StringStringEntryProto];
 }
-
