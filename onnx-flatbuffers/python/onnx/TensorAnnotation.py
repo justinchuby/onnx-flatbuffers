@@ -38,8 +38,8 @@ class TensorAnnotation(object):
             x = self._tab.Vector(o)
             x += flatbuffers.number_types.UOffsetTFlags.py_type(j) * 4
             x = self._tab.Indirect(x)
-            from onnx.StringStringEntryProto import StringStringEntryProto
-            obj = StringStringEntryProto()
+            from onnx.StringStringEntry import StringStringEntry
+            obj = StringStringEntry()
             obj.Init(self._tab.Bytes, x)
             return obj
         return None
@@ -77,7 +77,7 @@ def AddQuantParameterTensorNames(builder, quantParameterTensorNames):
 def TensorAnnotationStartQuantParameterTensorNamesVector(builder, numElems):
     return builder.StartVector(4, numElems, 4)
 
-def StartQuantParameterTensorNamesVector(builder, numElems: int) -> int:
+def StartQuantParameterTensorNamesVector(builder, numElems):
     return TensorAnnotationStartQuantParameterTensorNamesVector(builder, numElems)
 
 def TensorAnnotationEnd(builder):
@@ -86,7 +86,7 @@ def TensorAnnotationEnd(builder):
 def End(builder):
     return TensorAnnotationEnd(builder)
 
-import onnx.StringStringEntryProto
+import onnx.StringStringEntry
 try:
     from typing import List
 except:
@@ -97,7 +97,7 @@ class TensorAnnotationT(object):
     # TensorAnnotationT
     def __init__(self):
         self.tensorName = None  # type: str
-        self.quantParameterTensorNames = None  # type: List[onnx.StringStringEntryProto.StringStringEntryProtoT]
+        self.quantParameterTensorNames = None  # type: List[onnx.StringStringEntry.StringStringEntryT]
 
     @classmethod
     def InitFromBuf(cls, buf, pos):
@@ -127,8 +127,8 @@ class TensorAnnotationT(object):
                 if tensorAnnotation.QuantParameterTensorNames(i) is None:
                     self.quantParameterTensorNames.append(None)
                 else:
-                    stringStringEntryProto_ = onnx.StringStringEntryProto.StringStringEntryProtoT.InitFromObj(tensorAnnotation.QuantParameterTensorNames(i))
-                    self.quantParameterTensorNames.append(stringStringEntryProto_)
+                    stringStringEntry_ = onnx.StringStringEntry.StringStringEntryT.InitFromObj(tensorAnnotation.QuantParameterTensorNames(i))
+                    self.quantParameterTensorNames.append(stringStringEntry_)
 
     # TensorAnnotationT
     def Pack(self, builder):

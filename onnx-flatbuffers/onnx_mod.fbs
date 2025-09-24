@@ -1,8 +1,15 @@
-// Generated from onnx.proto
+// Generated from proto and modified
+// Reference https://github.com/microsoft/onnxruntime/blob/main/onnxruntime/core/flatbuffers/schema/ort.fbs
+// Design decisions:
+// 1. Simplified raw_data in Tensor
+// 2. Maintain field names as in onnx.proto as much as possible (maintain original plurality)
+// 3. Renamed table names to remove "Proto" suffix
+// 4. Flat namespaces to avoid deep nesting (or create a namespace for DeviceConfiguration?)
+// 5. Some names are simplified: TensorShape -> Shape, type_protos -> types
 
 namespace onnx;
 
-enum Version : int {
+enum Version : int32 {
   _START_VERSION = 0,
   IR_VERSION_2017_10_10 = 1,
   IR_VERSION_2017_10_30 = 2,
@@ -18,7 +25,7 @@ enum Version : int {
   IR_VERSION = 12,
 }
 
-enum AttributeType : int {
+enum AttributeType : int32 {
   UNDEFINED = 0,
   FLOAT = 1,
   INT = 2,
@@ -36,7 +43,7 @@ enum AttributeType : int {
   TYPE_PROTOS = 14,
 }
 
-enum DataType : int {
+enum DataType : int32 {
   UNDEFINED = 0,
   FLOAT = 1,
   UINT8 = 2,
@@ -64,228 +71,277 @@ enum DataType : int {
   FLOAT8E8M0 = 24,
 }
 
-enum TensorDataLocation : int {
+enum TensorDataLocation : uint8 {
   DEFAULT = 0,
   EXTERNAL = 1,
 }
 
-enum OperatorStatus : int {
+enum OperatorStatus : uint8 {
   EXPERIMENTAL = 0,
   STABLE = 1,
 }
 
-table AttributeProto {
+table Attribute {
   name:string;
   ref_attr_name:string;
+
   doc_string:string;
+
   type:AttributeType;
+
   f:float;
-  i:long;
-  s:[ubyte];
-  t:onnx.TensorProto;
-  g:onnx.GraphProto;
-  sparse_tensor:onnx.SparseTensorProto;
-  tp:onnx.TypeProto;
-  floats:[float];
-  ints:[long];
+  i:int64;
+  // s is different from that in onnx.proto which is bytes
+  s:string;
+  t:Tensor;
+  g:Graph;
+  sparse_tensor:SparseTensor;
+  tp:TypeInfo;
+
+  floats:[float32];
+  ints:[int64];
   strings:[string];
-  tensors:[onnx.TensorProto];
-  graphs:[onnx.GraphProto];
-  sparse_tensors:[onnx.SparseTensorProto];
-  type_protos:[onnx.TypeProto];
+  tensors:[Tensor];
+  graphs:[Graph];
+  sparse_tensors:[SparseTensor];
+  types:[TypeInfo];
 }
 
-table ValueInfoProto {
-  name:string;
-  type:onnx.TypeProto;
-  doc_string:string;
-  metadata_props:[onnx.StringStringEntryProto];
+table IntIntListEntry {
+  key:int64;
+  value:[int64];
 }
 
-table NodeProto {
-  input:[string];
-  output:[string];
-  name:string;
-  op_type:string;
-  domain:string;
-  overload:string;
-  attribute:[onnx.AttributeProto];
-  doc_string:string;
-  metadata_props:[onnx.StringStringEntryProto];
-  device_configurations:[onnx.NodeDeviceConfigurationProto];
-}
-
-table IntIntListEntryProto {
-  key:long;
-  value:[long];
-}
-
-table NodeDeviceConfigurationProto {
+table NodeDeviceConfiguration {
   configuration_id:string;
-  sharding_spec:[onnx.ShardingSpecProto];
+  sharding_spec:[ShardingSpec];
   pipeline_stage:int;
 }
 
-table ShardingSpecProto {
+table ShardingSpec {
   tensor_name:string;
-  device:[long];
-  index_to_device_group_map:[onnx.IntIntListEntryProto];
-  sharded_dim:[onnx.ShardedDimProto];
+  device:[int64];
+  index_to_device_group_map:[IntIntListEntry];
+  sharded_dim:[ShardedDim];
 }
 
-table ShardedDimProto {
-  axis:long;
-  simple_sharding:[onnx.SimpleShardedDimProto];
+table ShardedDim {
+  axis:int64;
+  simple_sharding:[SimpleShardedDim];
 }
 
-union DimValue { long, string }
-
-table SimpleShardedDimProto {
-  dim:DimValue;
-  num_shards:long;
+table SimpleShardedDim {
+  dim:DimensionValue;
+  num_shards:int64;
 }
 
-table TrainingInfoProto {
-  initialization:onnx.GraphProto;
-  algorithm:onnx.GraphProto;
-  initialization_binding:[onnx.StringStringEntryProto];
-  update_binding:[onnx.StringStringEntryProto];
+table TrainingInfo {
+  initialization:Graph;
+  algorithm:Graph;
+  initialization_binding:[StringStringEntry];
+  update_binding:[StringStringEntry];
 }
 
-table ModelProto {
-  ir_version:long;
-  opset_import:[onnx.OperatorSetIdProto];
-  producer_name:string;
-  producer_version:string;
-  domain:string;
-  model_version:long;
-  doc_string:string;
-  graph:onnx.GraphProto;
-  metadata_props:[onnx.StringStringEntryProto];
-  training_info:[onnx.TrainingInfoProto];
-  functions:[onnx.FunctionProto];
-  configuration:[onnx.DeviceConfigurationProto];
-}
-
-table DeviceConfigurationProto {
+table DeviceConfiguration {
   name:string;
   num_devices:int;
   device:[string];
 }
 
-table StringStringEntryProto {
+table StringStringEntry {
   key:string;
   value:string;
 }
 
 table TensorAnnotation {
   tensor_name:string;
-  quant_parameter_tensor_names:[onnx.StringStringEntryProto];
+  quant_parameter_tensor_names:[StringStringEntry];
 }
 
-table GraphProto {
-  node:[onnx.NodeProto];
+// For simplicity, we will have only two data fields
+// - string_data for string
+// - raw_data for all other types
+table Tensor {
   name:string;
-  initializer:[onnx.TensorProto];
-  sparse_initializer:[onnx.SparseTensorProto];
   doc_string:string;
-  input:[onnx.ValueInfoProto];
-  output:[onnx.ValueInfoProto];
-  value_info:[onnx.ValueInfoProto];
-  quantization_annotation:[onnx.TensorAnnotation];
-  metadata_props:[onnx.StringStringEntryProto];
-}
 
-table TensorProto {
-  dims:[long];
-  data_type:int;
-  segment:TensorSegment;
-  float_data:[float];
-  int32_data:[int];
-  string_data:[string];
-  int64_data:[long];
-  name:string;
-  doc_string:string;
+  dims:[int64];
+  data_type:DataType;
+
   raw_data:[ubyte];
-  external_data:[onnx.StringStringEntryProto];
+  string_data:[string];
+
+  external_data:[StringStringEntry];
   data_location:TensorDataLocation;
-  double_data:[double];
-  uint64_data:[ulong];
-  metadata_props:[onnx.StringStringEntryProto];
+
+  metadata_props:[StringStringEntry];
 }
 
 table TensorSegment {
-  begin:long;
-  end:long;
+  begin:int64;
+  end:int64;
 }
 
-table SparseTensorProto {
-  values:onnx.TensorProto;
-  indices:onnx.TensorProto;
-  dims:[long];
+table SparseTensor {
+  values:Tensor;
+  indices:Tensor;
+  dims:[int64];
 }
 
-table TensorShapeProto {
+// pb:TensorShapeProto
+table Shape {
   dim:[Dimension];
 }
 
+// pb:TensorShapeProto.Dimension
 table Dimension {
-  value:DimValue;
+  value:DimensionValue;
   denotation:string;
 }
 
-table TypeProto {
+// Use an enum instead of union to represent the oneof field because union
+// does not support int types
+enum DimensionValueType : int8 {
+  UNKNOWN = 0,
+  VALUE = 1,
+  PARAM = 2,
+}
+
+table DimensionValue {
+  dim_type:DimensionValueType;
+  dim_value:int64;
+  dim_param:string;
+}
+
+union ValueType {
+  tensor_type:TensorType,
+  sequence_type:SequenceType,
+  map_type:MapType,
+  optional_type:OptionalType,
+  sparse_tensor_type:SparseTensorType
+}
+
+// pb:TypeProto
+table TypeInfo {
   value:ValueType;
   denotation:string;
 }
 
+// pb:TypeProto.Tensor
 table TensorType {
-  elem_type:int;
-  shape:onnx.TensorShapeProto;
+  elem_type:DataType;
+  shape:Shape;
 }
 
+// pb:TypeProto.Sequence
 table SequenceType {
-  elem_type:onnx.TypeProto;
+  elem_type:ValueType;
 }
 
+// pb:TypeProto.Map
 table MapType {
-  key_type:int;
-  value_type:onnx.TypeProto;
+  key_type:DataType;
+  value_type:ValueType;
 }
 
+// pb:TypeProto.Optional
 table OptionalType {
-  elem_type:onnx.TypeProto;
+  elem_type:ValueType;
 }
 
+// pb:TypeProto.SparseTensor
 table SparseTensorType {
-  elem_type:int;
-  shape:onnx.TensorShapeProto;
+  elem_type:DataType;
+  shape:Shape;
 }
 
-Union ValueType {
-  TensorType,
-  SequenceType,
-  MapType,
-  OptionalType,
-  SparseTensorType,
-}
-
-table OperatorSetIdProto {
+// pb:OperatorSetIdProto
+table OperatorSetId {
   domain:string;
-  version:long;
+  version:int64;
 }
 
-table FunctionProto {
+// pb:ValueInfoProto
+table ValueInfo {
   name:string;
-  input:[string];
-  output:[string];
-  attribute:[string];
-  attribute_proto:[onnx.AttributeProto];
-  node:[onnx.NodeProto];
+  type:TypeInfo;
+
   doc_string:string;
-  opset_import:[onnx.OperatorSetIdProto];
+  metadata_props:[StringStringEntry];
+}
+
+// pb:NodeProto
+table Node {
+  name:string;
+
+  op_type:string;
   domain:string;
   overload:string;
-  value_info:[onnx.ValueInfoProto];
-  metadata_props:[onnx.StringStringEntryProto];
+
+  input:[string];
+  output:[string];
+  attribute:[Attribute];
+
+  device_configurations:[NodeDeviceConfiguration];
+
+  doc_string:string;
+  metadata_props:[StringStringEntry];
+}
+
+// pb:GraphProto
+table Graph {
+  name:string;
+
+  node:[Node];
+  initializer:[Tensor];
+  sparse_initializer:[SparseTensor];
+
+  input:[ValueInfo];
+  output:[ValueInfo];
+
+  value_info:[ValueInfo];
+  quantization_annotation:[TensorAnnotation];
+
+  doc_string:string;
+  metadata_props:[StringStringEntry];
+}
+
+// pb:FunctionProto
+table Function {
+  name:string;
+  domain:string;
+  overload:string;
+
+  opset_import:[OperatorSetId];
+
+  input:[string];
+  output:[string];
+
+  // NOTE: attribute:string is removed
+  attribute:[Attribute];
+
+  node:[Node];
+  value_info:[ValueInfo];
+
+  doc_string:string;
+  metadata_props:[StringStringEntry];
+}
+
+// pb:ModelProto
+table Model {
+  ir_version:int64;
+  opset_import:[OperatorSetId];
+  producer_name:string;
+  producer_version:string;
+  domain:string;
+  model_version:int64;
+
+  graph:Graph;
+  functions:[Function];
+
+  training_info:[TrainingInfo];
+  configuration:[DeviceConfiguration];
+
+  doc_string:string;
+  metadata_props:[StringStringEntry];
 }
